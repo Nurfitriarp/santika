@@ -4,7 +4,7 @@
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
                 <div class="sidebar-brand-icon">
-                    <img src="<?= base_url('assets/img/logo.png'); ?>" width="80" alt="Logo">
+                    <img src="<?= base_url('assets/img/logo.png'); ?>" width="60" alt="Logo">
                 </div>
                 <div class="sidebar-brand-text mx-3">Santika</div>
             </a>

@@ -246,26 +246,12 @@
                         <table class="table table-bordered table-hover" width="100%" cellspacing="0">
                             <thead>
                             <tr>
-                                <th scope="col">No</th>
                                 <th scope="col">Nama Kegiatan</th>
                                 <th scope="col">Tempat</th>
                                 <th scope="col">Pemimpin Rapat</th>
                                 <th scope="col" width="20%" class="text-center">Aksi</th>
                             </tr>
                             </thead>
-                            <tbody>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Sosialisasi Alur Kerja Baru</td>
-                                <td>Ruang Rapat Utama</td>
-                                <td>Bpk. Douglas McGee</td>
-                                <td class="text-center">
-                                    <a href="<?= base_url('kegiatan/detail/1'); ?>" class="btn btn-sm btn-primary" title="Detail">
-                                        <i class="fas fa-eye"></i> Detail
-                                    </a>
-                                </td>
-                            </tr>
-                        </tbody>
                         </table>
                     </div>
                 </div>
