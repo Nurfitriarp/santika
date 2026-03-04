@@ -29,9 +29,12 @@ class M_admin extends CI_Model {
 
     public function search_kegiatan($keyword)
     {
-        return $this->db->like('NAMA', $keyword, 'both')
-                        ->get('tbl_kegiatan')
-                        ->result();
+        // Cari di kolom NAMA, TEMPAT, atau PIMPINAN_RAPAT
+        $this->db->like('NAMA', $keyword, 'both');
+        $this->db->or_like('TEMPAT', $keyword, 'both');
+        $this->db->or_like('PIMPINAN_RAPAT', $keyword, 'both');
+        $this->db->order_by('ID_KEGIATAN', 'DESC');
+        return $this->db->get('tbl_kegiatan')->result();
     }
 
     public function get_opd()
