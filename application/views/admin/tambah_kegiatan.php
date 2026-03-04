@@ -1,5 +1,12 @@
-<div class="container-fluid">
-    <h4 class="mt-4 mb-4">Tambah Kegiatan</h4>
+<!-- Content Wrapper -->
+<div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content">
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+            <h4 class="mt-4 mb-4">Tambah Kegiatan</h4>
 
     <?php $CI =& get_instance(); ?>
     <?php if ($CI->session->flashdata('success')): ?>
