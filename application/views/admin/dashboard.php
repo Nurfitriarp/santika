@@ -124,6 +124,9 @@
                                     <a href="<?= base_url('admin/detail/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-primary" title="Detail">
                                         <i class="fas fa-eye"></i> Detail
                                     </a>
+                                    <a href="<?= base_url('admin/hapus/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-danger" title="Hapus" onclick="return confirm('Yakin ingin menghapus kegiatan ini?');">
+                                        <i class="fas fa-trash"></i> Hapus
+                                    </a>
                                 </td>
                             </tr>
                             <?php endforeach; ?>

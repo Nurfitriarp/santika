@@ -4,7 +4,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class M_admin extends CI_Model {
 
     public function get_data() {
-        // Ganti 'nama_tabel' dengan nama tabel asli di phpMyAdmin Anda
+        // Ambil data kegiatan dengan urutan: data terbaru diinputkan muncul pertama
+        $this->db->order_by('ID_KEGIATAN', 'DESC');
         return $this->db->get('tbl_kegiatan')->result();
     }
     
@@ -18,8 +19,12 @@ class M_admin extends CI_Model {
     }
     
     public function get_peserta($id_kegiatan) {
-        // Ambil list peserta berdasarkan ID_KEGIATAN
-        return $this->db->where('ID_KEGIATAN', $id_kegiatan)->get('tbl_login')->result();
+        // Ambil list peserta berdasarkan ID_KEGIATAN dan sertakan nama OPD
+        $this->db->select('tbl_login.*, tbl_opd.NAMA_OPD');
+        $this->db->from('tbl_login');
+        $this->db->join('tbl_opd', 'tbl_opd.ID_OPD = tbl_login.ID_OPD', 'left');
+        $this->db->where('ID_KEGIATAN', $id_kegiatan);
+        return $this->db->get()->result();
     }
 
     public function search_kegiatan($keyword)
@@ -58,5 +63,21 @@ class M_admin extends CI_Model {
             return $this->db->insert_id();
         }
         return false;
+    }
+
+    /**
+     * Hapus kegiatan beserta peserta yang terkait.
+     * Menggunakan transaksi untuk konsistensi data.
+     */
+    public function delete_kegiatan($id)
+    {
+        $this->db->trans_start();
+        // Hapus peserta yang terkait dengan kegiatan ini (jika ada)
+        $this->db->where('ID_KEGIATAN', $id)->delete('tbl_login');
+        // Hapus kegiatan
+        $this->db->where('ID_KEGIATAN', $id)->delete('tbl_kegiatan');
+        $this->db->trans_complete();
+
+        return $this->db->trans_status();
     }
 }

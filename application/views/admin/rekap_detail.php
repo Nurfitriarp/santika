@@ -116,7 +116,7 @@
                                                 <td><?= $p->JEN_KEL == 1 ? 'Laki-laki' : 'Perempuan' ?></td>
                                                 <td><?= $p->NO_HP ?? 'N/A' ?></td>
                                                 <td><?= $p->EMAIL ?? 'N/A' ?></td>
-                                                <td><?= $p->ID_OPD ?? 'N/A' ?></td>
+                                                <td><?= $p->NAMA_OPD ?? 'N/A' ?></td>
                                                 <td><?= $p->JABATAN ?? 'N/A' ?></td>
                                             </tr>
                                             <?php endforeach; ?>

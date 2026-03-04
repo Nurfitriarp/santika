@@ -78,4 +78,21 @@ class Admin extends CI_Controller {
         }
         redirect('admin/dashboard');
     }
+
+    // Hapus kegiatan
+    public function hapus($id)
+    {
+        if (!$id) {
+            $this->session->set_flashdata('error', 'ID kegiatan tidak valid.');
+            redirect('admin/dashboard');
+        }
+
+        $ok = $this->M_admin->delete_kegiatan($id);
+        if ($ok) {
+            $this->session->set_flashdata('success', 'Kegiatan berhasil dihapus.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal menghapus kegiatan.');
+        }
+        redirect('admin/dashboard');
+    }
 }
