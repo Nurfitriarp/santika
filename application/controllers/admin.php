@@ -15,6 +15,11 @@ class Admin extends CI_Controller {
         $this->load->model('M_admin', 'M_admin');
     }
 
+    public function index()
+    {
+        $this->dashboard();
+    }
+
     public function dashboard()
     {
         // Pastikan nama model di sini sama dengan alias di atas

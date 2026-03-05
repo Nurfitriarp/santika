@@ -13,7 +13,7 @@
                     </button>
 
                     <div class="d-none d-lg-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100">
-                        <h1 class="h5 mb-0 text-gray-800 font-weight-bold">Dashboard Admin</h1>
+                        <h1 class="h5 mb-0 text-gray-800 font-weight-bold">Rekap Kegiatan</h1>
                     </div>
                     
 
@@ -69,6 +69,25 @@
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
+                    <!-- Flashdata Alert -->
+                    <?php $CI =& get_instance(); ?>
+                    <?php if ($CI->session->flashdata('success')): ?>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <?= $CI->session->flashdata('success') ?>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($CI->session->flashdata('error')): ?>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <?= $CI->session->flashdata('error') ?>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    <?php endif; ?>
+
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800"></h1>
@@ -115,7 +134,7 @@
                                 <th>Tanggal</th>
                                 <th>Tempat</th>
                                 <th>Pemimpin Rapat</th>
-                                <th class="text-center" width="20%">Aksi</th>
+                                <th class="text-center" width="auto">Aksi</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -126,13 +145,18 @@
                                 <td><?= $row->TANGGAL ?></td>
                                 <td><?= $row->TEMPAT ?></td>
                                 <td><?= $row->PIMPINAN_RAPAT ?></td>
-                                <td class="text-center">
-                                    <a href="<?= base_url('admin/detail/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-primary" title="Detail">
-                                        <i class="fas fa-eye"></i> Detail
-                                    </a>
-                                    <a href="<?= base_url('admin/hapus/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-danger" title="Hapus" onclick="return confirm('Yakin ingin menghapus kegiatan ini?');">
-                                        <i class="fas fa-trash"></i> Hapus
-                                    </a>
+                                <td class="text-center" style="padding: 8px 6px;">
+                                    <div class="d-flex justify-content-center flex-wrap" style="gap: 6px;">
+                                        <a href="<?= base_url('admin/detail/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-primary" style="width: 38px; height: 38px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Detail">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="<?= base_url('admin/edit/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-warning" style="width: 38px; height: 38px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="<?= base_url('admin/hapus/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-danger" style="width: 38px; height: 38px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Hapus" onclick="return confirm('Yakin ingin menghapus kegiatan ini?');">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
@@ -155,3 +179,19 @@
             <!-- End of Main Content -->
 
         <!-- End of Main Content -->
+
+        <script>
+            // Auto dismiss alert setelah 3 detik
+            document.addEventListener('DOMContentLoaded', function() {
+                const alerts = document.querySelectorAll('.alert:not(.alert-warning)');
+                alerts.forEach(function(alert) {
+                    setTimeout(function() {
+                        alert.style.transition = 'opacity 0.5s ease-out';
+                        alert.style.opacity = '0';
+                        setTimeout(function() {
+                            alert.remove();
+                        }, 500);
+                    }, 3000);
+                });
+            });
+        </script>
