@@ -26,7 +26,11 @@ class Admin extends CI_Controller {
     {
         // Profile page - fetch admin data from tbl_user
         $admin_id = $this->session->userdata('admin_id') ?: 1; // default to 1 if not set
-        $data['admin'] = $this->db->get_where('tbl_user', ['ID' => $admin_id])->row();
+        // include spaces in column name by aliasing it to a valid property
+        $data['admin'] = $this->db
+            ->select("*, `PERANGKAT DAERAH` AS PERANGKAT_DAERAH")
+            ->get_where('tbl_user', ['ID' => $admin_id])
+            ->row();
         
         $this->load->view('admin/header');
         $this->load->view('admin/sidebar');
@@ -37,6 +41,11 @@ class Admin extends CI_Controller {
     public function rekap()
     {
         // Tampilkan halaman rekap kegiatan
+        $admin_id = $this->session->userdata('admin_id') ?: 1;
+        $data['admin'] = $this->db
+            ->select("*, `PERANGKAT DAERAH` AS PERANGKAT_DAERAH")
+            ->get_where('tbl_user', ['ID' => $admin_id])
+            ->row();
         $data['kegiatan'] = $this->M_admin->get_data();
         
         $this->load->view('admin/header');
@@ -76,6 +85,12 @@ class Admin extends CI_Controller {
     // Search kegiatan di halaman rekap
     public function rekap_search()
     {
+        $admin_id = $this->session->userdata('admin_id') ?: 1;
+        $data['admin'] = $this->db
+            ->select("*, `PERANGKAT DAERAH` AS PERANGKAT_DAERAH")
+            ->get_where('tbl_user', ['ID' => $admin_id])
+            ->row();
+        
         $keyword = $this->input->post('keyword');
         if ($keyword) {
             $data['kegiatan'] = $this->M_admin->search_kegiatan($keyword);
@@ -98,6 +113,11 @@ class Admin extends CI_Controller {
     public function kegiatan()
     {
         // Tampilkan halaman kegiatan
+        $admin_id = $this->session->userdata('admin_id') ?: 1;
+        $data['admin'] = $this->db
+            ->select("*, `PERANGKAT DAERAH` AS PERANGKAT_DAERAH")
+            ->get_where('tbl_user', ['ID' => $admin_id])
+            ->row();
         $data['kegiatan'] = $this->M_admin->get_data();
         
         $this->load->view('admin/header');
@@ -109,6 +129,12 @@ class Admin extends CI_Controller {
     // Search kegiatan di halaman kegiatan
     public function kegiatan_search()
     {
+        $admin_id = $this->session->userdata('admin_id') ?: 1;
+        $data['admin'] = $this->db
+            ->select("*, `PERANGKAT DAERAH` AS PERANGKAT_DAERAH")
+            ->get_where('tbl_user', ['ID' => $admin_id])
+            ->row();
+        
         $keyword = $this->input->post('keyword');
         if ($keyword) {
             $data['kegiatan'] = $this->M_admin->search_kegiatan($keyword);
