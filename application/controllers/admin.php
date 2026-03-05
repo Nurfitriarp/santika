@@ -157,6 +157,7 @@ class Admin extends CI_Controller {
     // show tambah form
     public function tambah()
     {
+        $token = bin2hex(random_bytes(8)); // Menghasilkan kode unik seperti 'a1b2c3d4' 
         $data['opd'] = $this->M_admin->get_opd();
 
         $this->load->view('admin/header');
@@ -169,7 +170,11 @@ class Admin extends CI_Controller {
     public function simpan()
     {
         $input = $this->input->post();
+        // generate token otomatis sebelum simpan
+        $input['qr_token'] = bin2hex(random_bytes(10));
+        
         $insert_id = $this->M_admin->insert_kegiatan($input);
+
         if ($insert_id) {
             $this->session->set_flashdata('success', 'Kegiatan berhasil ditambahkan.');
         } else {
@@ -194,4 +199,5 @@ class Admin extends CI_Controller {
         }
         redirect('admin/kegiatan');
     }
+
 }

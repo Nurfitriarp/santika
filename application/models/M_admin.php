@@ -59,6 +59,7 @@ class M_admin extends CI_Model {
             'STS' => isset($data['STS']) ? $data['STS'] : 0,
             'SERTIFIKAT' => isset($data['SERTIFIKAT']) ? $data['SERTIFIKAT'] : 0,
             'JAM_PELAJARAN' => isset($data['JAM_PELAJARAN']) ? $data['JAM_PELAJARAN'] : null,
+            'qr_token'      => isset($data['qr_token']) ? $data['qr_token'] : null, // QR TOKEN
         ];
         
         $ok = $this->db->insert('tbl_kegiatan', $insert);
@@ -76,7 +77,7 @@ class M_admin extends CI_Model {
     {
         $this->db->trans_start();
         // Hapus peserta yang terkait dengan kegiatan ini (jika ada)
-        $this->db->where('ID_KEGIATAN', $id)->delete('tbl_login');
+        $this->db->where('ID_KEGIATAN', $id)->delete('tbl_presensi');
         // Hapus kegiatan
         $this->db->where('ID_KEGIATAN', $id)->delete('tbl_kegiatan');
         $this->db->trans_complete();

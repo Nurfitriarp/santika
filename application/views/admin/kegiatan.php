@@ -124,6 +124,7 @@
                                 <th>Tanggal</th>
                                 <th>Tempat</th>
                                 <th>Pemimpin Rapat</th>
+                                <th class="text-center" width="auto">QR Presensi</th>
                                 <th class="text-center" width="auto">Aksi</th>
                             </tr>
                             </thead>
@@ -135,15 +136,29 @@
                                 <td><?= $row->TANGGAL ?></td>
                                 <td><?= $row->TEMPAT ?></td>
                                 <td><?= $row->PIMPINAN_RAPAT ?></td>
-                                <td class="text-center" style="padding: 8px 6px;">
-                                    <div class="d-flex justify-content-center flex-wrap" style="gap: 6px;">
-                                        <a href="<?= base_url('admin/detail/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-primary" style="width: 38px; height: 38px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Detail">
+                                <td class="text-center">
+                                    <?php 
+                                    // Jika qr_token kosong, QR tidak akan muncul
+                                    if(!empty($row->qr_token)): 
+                                        $url_presensi = base_url('presensi/isi/' . $row->qr_token);
+                                        $qr_api = "https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=" . urlencode($url_presensi);
+                                    ?>
+                                        <a href="<?= $qr_api ?>" target="_blank" title="Klik untuk Cetak">
+                                        <img src="<?= $qr_api ?>" width="50" style="border: 1px solid #ddd;">
+                                        </a>
+                                    <?php else: ?>
+                                        <span class="badge badge-secondary">Token Belum Ada</span>
+                                    <?php endif; ?>
+                                    </td>  
+                                <td class="text-center" style="vertical-align: middle;">
+                                    <div class="d-flex justify-content-center align-items-center" style="gap: 5px; min-width: 120px;">
+                                        <a href="<?= base_url('admin/detail/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-primary" title="Detail">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="<?= base_url('admin/edit/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-warning" style="width: 38px; height: 38px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Edit">
-                                            <i class="fas fa-edit"></i>
+                                        <a href="<?= base_url('admin/edit/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-warning" title="Edit">
+                                            <i class="fas fa-edit text-white"></i>
                                         </a>
-                                        <a href="<?= base_url('admin/hapus/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-danger" style="width: 38px; height: 38px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Hapus" onclick="return confirm('Yakin ingin menghapus kegiatan ini?');">
+                                        <a href="<?= base_url('admin/hapus/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-danger" title="Hapus" onclick="return confirm('Yakin ingin menghapus kegiatan ini?');">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                     </div>
