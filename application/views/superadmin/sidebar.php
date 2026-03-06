@@ -21,6 +21,13 @@
                     <span>Dashboard</span></a>
             </li>
 
+            <!-- Nav Item - Kelola Kegiatan -->
+            <li class="nav-item <?php echo ($current_segment == 'kelola_user') ? 'active' : ''; ?>">
+                <a class="nav-link" href="<?= base_url('superadmin/kelola_user'); ?>">
+                    <i class="fas fa-fw fa-calendar-alt"></i>
+                    <span>Kelola User</span></a>
+            </li>
+
             <!-- Nav Item - Kegiatan -->
             <li class="nav-item <?php echo ($current_segment == 'kegiatan') ? 'active' : ''; ?>">
                 <a class="nav-link" href="<?= base_url('superadmin/kegiatan'); ?>">

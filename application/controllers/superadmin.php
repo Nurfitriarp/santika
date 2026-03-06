@@ -2,9 +2,9 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * @property M_admin $M_admin
+ * @property M_superadmin M_superadmin
  */
-class Superadmin extends CI_Controller {
+class Superadmin extends MY_Controller {
 
     public function __construct()
     {
@@ -12,7 +12,7 @@ class Superadmin extends CI_Controller {
         $this->load->library('session');
         $this->load->helper('form');
         $this->load->helper('activity'); // Pastikan nama helper sesuai (activity_helper.php)
-        $this->load->model('M_admin', 'M_admin');
+        $this->load->model('M_superadmin', 'M_superadmin');
 
         // Proteksi: Harus login DAN harus role super_admin
         if (!$this->session->userdata('admin_id') || $this->session->userdata('role') !== 'super_admin') {
@@ -30,7 +30,7 @@ class Superadmin extends CI_Controller {
     {
         $admin_id = $this->session->userdata('admin_id');
         $data['admin'] = $this->db
-            ->select("*, `PERANGKAT DAERAH` AS PERANGKAT_DAERAH")
+            ->select("*, PERANGKAT_DAERAH")
             ->get_where('tbl_user', ['ID' => $admin_id])
             ->row();
         
@@ -74,7 +74,7 @@ class Superadmin extends CI_Controller {
     {
         $admin_id = $this->session->userdata('admin_id');
         $data['superadmin'] = $this->db
-            ->select("*, `PERANGKAT DAERAH` AS PERANGKAT_DAERAH")
+            ->select("*, PERANGKAT_DAERAH")
             ->get_where('tbl_user', ['ID' => $admin_id])
             ->row();
         $data['kegiatan'] = $this->M_admin->get_data();
@@ -133,7 +133,7 @@ class Superadmin extends CI_Controller {
 {
     $admin_id = $this->session->userdata('admin_id');
     $data['admin'] = $this->db
-        ->select("*, `PERANGKAT DAERAH` AS PERANGKAT_DAERAH")
+        ->select("*, PERANGKAT_DAERAH")
         ->get_where('tbl_user', ['ID' => $admin_id])
         ->row();
 
@@ -174,7 +174,7 @@ class Superadmin extends CI_Controller {
 {
     $admin_id = $this->session->userdata('admin_id');
     $data['admin'] = $this->db
-        ->select("*, `PERANGKAT DAERAH` AS PERANGKAT_DAERAH")
+        ->select("*, PERANGKAT_DAERAH")
         ->get_where('tbl_user', ['ID' => $admin_id])
         ->row();
     $data['opd'] = $this->M_admin->get_opd();
@@ -189,7 +189,7 @@ public function detail($id)
 {
     $admin_id = $this->session->userdata('admin_id');
     $data['admin'] = $this->db
-        ->select("*, `PERANGKAT DAERAH` AS PERANGKAT_DAERAH")
+        ->select("*, PERANGKAT_DAERAH")
         ->get_where('tbl_user', ['ID' => $admin_id])
         ->row();
 
@@ -211,7 +211,7 @@ public function detail($id)
     {
         $admin_id = $this->session->userdata('admin_id');
         $data['admin'] = $this->db
-            ->select("*, `PERANGKAT DAERAH` AS PERANGKAT_DAERAH")
+            ->select("*, PERANGKAT_DAERAH")
             ->get_where('tbl_user', ['ID' => $admin_id])
             ->row();
         $data['kegiatan'] = $this->M_admin->get_data();
@@ -219,6 +219,121 @@ public function detail($id)
         $this->load->view('superadmin/header');
         $this->load->view('superadmin/sidebar');
         $this->load->view('superadmin/rekap_kegiatan', $data);
+        $this->load->view('superadmin/footer');
+    }
+
+    // UNTUK KELOLA USER
+    public function kelola_user() {
+        $admin_id = $this->session->userdata('admin_id');
+    
+        // Data untuk profil admin yang sedang login
+        $data['admin'] = $this->db->get_where('tbl_user', ['ID' => $admin_id])->row();
+    
+        // Data semua user untuk isi tabel
+        $data['all_users'] = $this->M_superadmin->get_all_users();
+
+        $this->load->view('superadmin/header');
+        $this->load->view('superadmin/sidebar');
+        $this->load->view('superadmin/kelola_user', $data); // Halaman tabel user
+        $this->load->view('superadmin/footer');
+    }
+
+    // Menampilkan form edit user
+public function edit_user($id) {
+    $admin_id = $this->session->userdata('admin_id');
+    $data['admin'] = $this->db->get_where('tbl_user', ['ID' => $admin_id])->row();
+    
+    // Ambil data user yang akan diedit
+    $data['user_item'] = $this->db->get_where('tbl_user', ['ID' => $id])->row();
+
+    if (!$data['user_item']) {
+        $this->session->set_flashdata('error', 'User tidak ditemukan.');
+        redirect('superadmin/kelola_user');
+    }
+
+    $this->load->view('superadmin/header');
+    $this->load->view('superadmin/sidebar');
+    $this->load->view('superadmin/edit_user', $data);
+    $this->load->view('superadmin/footer');
+}
+
+    // Proses update data user
+    public function update_user() {
+        $id = $this->input->post('id');
+        $password_new = $this->input->post('password');
+
+        $data = [
+            'NAMA'             => $this->input->post('nama'),
+            'PERANGKAT_DAERAH' => $this->input->post('pd'),
+            'BIDANG'           => $this->input->post('bidang'),
+            'USERNAME'         => $this->input->post('username'),
+            'ROLE'             => $this->input->post('role')
+        ];
+
+        // Update password hanya jika diisi
+        if (!empty($password_new)) {
+            $data['PASSWORD'] = password_hash($password_new, PASSWORD_DEFAULT);
+        }
+
+        $this->db->where('ID', $id);
+
+        if ($this->db->update('tbl_user', $data)) {
+        // Catat Activity Log otomatis
+            $this->log_activity('EDIT', 'Memperbarui data user: ' . $data['USERNAME']);
+            $this->session->set_flashdata('success', 'Data user berhasil diperbarui.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal memperbarui data.');
+        }
+        redirect('superadmin/kelola_user');
+    }
+   
+    public function simpan_user() {
+    // Konfigurasi Upload Gambar
+    $config['upload_path']   = './assets/img/profile/';
+    $config['allowed_types'] = 'gif|jpg|png|jpeg';
+    $config['max_size']      = 2048; // 2MB
+    $config['file_name']     = 'profile_' . time(); // Penamaan unik
+
+    $this->load->library('upload', $config);
+
+    if ($this->upload->do_upload('gambar')) {
+        // Jika berhasil upload
+        $upload_data = $this->upload->data();
+        $file_name   = $upload_data['file_name'];
+    } else {
+        // Jika gagal atau tidak upload, gunakan default
+        $file_name = 'default.svg';
+    }
+
+    $data = [
+        'NAMA'             => $this->input->post('nama'),
+        'PERANGKAT_DAERAH' => $this->input->post('pd'),
+        'BIDANG'           => $this->input->post('bidang'),
+        'USERNAME'         => $this->input->post('username'),
+        'PASSWORD'         => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
+        'ROLE'             => $this->input->post('role'),
+        'GAMBAR'           => $file_name // Nama file yang disimpan di database
+    ];
+
+    if ($this->db->insert('tbl_user', $data)) {
+        $this->log_activity('ADD', "Menambahkan user baru: " . $data['USERNAME']);
+        $this->session->set_flashdata('success', 'User berhasil ditambahkan.');
+    } else {
+        $this->session->set_flashdata('error', 'Gagal menambahkan user.');
+    }
+    redirect('superadmin/kelola_user');
+    }
+
+    public function tambah_user() {
+        $admin_id = $this->session->userdata('admin_id');
+        $data['admin'] = $this->db
+            ->select("*, PERANGKAT_DAERAH")
+            ->get_where('tbl_user', ['ID' => $admin_id])
+            ->row();
+
+        $this->load->view('superadmin/header');
+        $this->load->view('superadmin/sidebar');
+        $this->load->view('superadmin/tambah_user', $data); // Pastikan nama file sesuai
         $this->load->view('superadmin/footer');
     }
 

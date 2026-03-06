@@ -86,11 +86,21 @@ class M_superadmin extends CI_Model {
     }
 
     public function get_activity_logs($limit = 10) {
-    $this->db->select('activity_logs.*, tbl_user.NAMA as nama_user'); // Kita beri alias nama_user
-    $this->db->from('activity_logs');
-    $this->db->join('tbl_user', 'tbl_user.ID = activity_logs.user_id', 'left');
-    $this->db->order_by('activity_logs.created_at', 'DESC');
-    $this->db->limit($limit);
-    return $this->db->get()->result();
+        $this->db->select('activity_logs.*, tbl_user.NAMA as nama_user'); // Kita beri alias nama_user
+        $this->db->from('activity_logs');
+        $this->db->join('tbl_user', 'tbl_user.ID = activity_logs.user_id', 'left');
+        $this->db->order_by('activity_logs.created_at', 'DESC');
+        $this->db->limit($limit);
+        return $this->db->get()->result();
+    }
+    
+    // UNTUK KELOLA USER
+    public function get_all_users() {
+    // Mengambil semua data dari tbl_user
+    return $this->db->get('tbl_user')->result();
+    }
+
+    public function get_user_by_id($id) {
+    return $this->db->get_where('tbl_user', ['ID' => $id])->row();
 }
 }

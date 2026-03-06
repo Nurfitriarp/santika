@@ -87,7 +87,7 @@
                         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                             
                             <h6 class="m-0 font-weight-bold text-primary">REKAP KEGIATAN</h6>              
-                            <form class="form-inline navbar-search" method="POST" action="<?= base_url('admin/search'); ?>">
+                            <form class="form-inline navbar-search" method="POST" action="<?= base_url('superadmin/search'); ?>">
                                 <div class="input-group">
                                     <input type="text" name="keyword" class="form-control bg-light border-5 small" placeholder="Cari Kegiatan..."
                                         aria-label="Search" aria-describedby="basic-addon2" value="<?= isset($keyword) ? $keyword : ''; ?>">
