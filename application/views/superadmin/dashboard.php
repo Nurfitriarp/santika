@@ -56,6 +56,54 @@
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
+                    <!-- Flash messages -->
+                    <?php if($this->session->flashdata('success')): ?>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <?= $this->session->flashdata('success'); ?>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    <?php endif; ?>
+                    <?php if($this->session->flashdata('error')): ?>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <?= $this->session->flashdata('error'); ?>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Password Edit Modal -->
+                    <div class="modal fade" id="editPasswordModal" tabindex="-1" role="dialog" aria-labelledby="editPasswordModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="editPasswordModalLabel">Ubah Password</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <form method="post" action="<?= base_url('admin/change_password'); ?>">
+                              <div class="modal-body">
+                                  <div class="form-group">
+                                      <label for="old_password">Password Lama</label>
+                                      <input type="password" class="form-control" name="old_password" id="old_password" required>
+                                  </div>
+                                  <div class="form-group">
+                                      <label for="new_password">Password Baru</label>
+                                      <input type="password" class="form-control" name="new_password" id="new_password" required>
+                                  </div>
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                  <button type="submit" class="btn btn-primary">Ubah</button>
+                              </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800"></h1>

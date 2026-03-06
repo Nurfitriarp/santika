@@ -66,7 +66,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary">Simpan</button>
-                <a href="<?= base_url('admin/dashboard') ?>" class="btn btn-secondary">Batal</a>
+                <a href="<?= base_url('admin/kegiatan') ?>" class="btn btn-secondary">Batal</a>
             </form>
         </div>
     </div>

@@ -138,18 +138,24 @@
                                 <td><?= $row->PIMPINAN_RAPAT ?></td>
                                 <td class="text-center">
                                     <?php 
-                                    // Jika qr_token kosong, QR tidak akan muncul
-                                    if(!empty($row->qr_token)): 
-                                        $url_presensi = base_url('presensi/isi/' . $row->qr_token);
-                                        $qr_api = "https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=" . urlencode($url_presensi);
+                                        if(!empty($row->qr_token)): 
+                                            $this->load->helper('url'); // Pastikan helper url aktif
+            
+                                            // Membuat slug dari nama kegiatan
+                                            $slug_nama = url_title($row->NAMA, 'dash', TRUE); 
+            
+                                            // URL baru: presensi/isi/[token]/[nama-kegiatan]
+                                            $url_presensi = base_url('presensi/isi/' . $row->qr_token . '/' . $slug_nama);
+            
+                                            $qr_api = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" . urlencode($url_presensi);
                                     ?>
                                         <a href="<?= $qr_api ?>" target="_blank" title="Klik untuk Cetak">
-                                        <img src="<?= $qr_api ?>" width="50" style="border: 1px solid #ddd;">
+                                            <img src="<?= $qr_api ?>" width="50" style="border: 1px solid #ddd;">
                                         </a>
                                     <?php else: ?>
                                         <span class="badge badge-secondary">Token Belum Ada</span>
                                     <?php endif; ?>
-                                    </td>  
+                                </td>
                                 <td class="text-center" style="vertical-align: middle;">
                                     <div class="d-flex justify-content-center align-items-center" style="gap: 5px; min-width: 120px;">
                                         <a href="<?= base_url('admin/detail/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-primary" title="Detail">

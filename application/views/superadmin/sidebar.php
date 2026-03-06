@@ -131,7 +131,7 @@
 
             <!-- Nav Item - Logout -->
             <li class="nav-item">
-                <a class="nav-link" href="<?= base_url('superadmin/logout'); ?>" onclick="return confirm('Apakah Anda yakin ingin logout?')">
+                <a class="nav-link" href="<?= base_url('admin/logout'); ?>" onclick="return confirm('Apakah Anda yakin ingin logout?')">
                     <i class="fas fa-fw fa-sign-out-alt"></i>
                     <span>Logout</span></a>
             </li>
