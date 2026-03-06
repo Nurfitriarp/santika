@@ -20,9 +20,9 @@ class M_admin extends CI_Model {
     
     public function get_peserta($id_kegiatan) {
         // Ambil list peserta berdasarkan ID_KEGIATAN dan sertakan nama OPD
-        $this->db->select('tbl_login.*, tbl_opd.NAMA_OPD');
-        $this->db->from('tbl_login');
-        $this->db->join('tbl_opd', 'tbl_opd.ID_OPD = tbl_login.ID_OPD', 'left');
+        $this->db->select('tbl_presensi.*, tbl_opd.NAMA_OPD');
+        $this->db->from('tbl_presensi');
+        $this->db->join('tbl_opd', 'tbl_opd.ID_OPD = tbl_presensi.ID_OPD', 'left');
         $this->db->where('ID_KEGIATAN', $id_kegiatan);
         return $this->db->get()->result();
     }

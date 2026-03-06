@@ -1,8 +1,8 @@
 <?php
 class Presensi extends CI_Controller {
-
-    public function isi($token) {
-        // Cari kegiatan berdasarkan token
+    
+    public function isi($token, $nama = '') {
+        // Cari kegiatan tetap berdasarkan token agar akurat
         $kegiatan = $this->db->get_where('tbl_kegiatan', ['qr_token' => $token])->row();
 
         if (!$kegiatan) {
@@ -11,8 +11,7 @@ class Presensi extends CI_Controller {
 
         $data['kegiatan'] = $kegiatan;
         $data['opd'] = $this->db->get('tbl_opd')->result();
-        
-        // Tampilkan form daftar hadir untuk peserta
+    
         $this->load->view('publik/form_presensi', $data);
     }
 
@@ -31,7 +30,7 @@ class Presensi extends CI_Controller {
             'TTD'         => $input['TTD'] // Bisa berupa string base64 tanda tangan digital
         ];
 
-        if($this->db->insert('tbl_daftarhadir', $data_hadir)) {
+        if($this->db->insert('tbl_presensi', $data_hadir)) {
             echo "Presensi Berhasil Terkirim. Terima kasih.";
         }
     }

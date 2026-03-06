@@ -15,6 +15,10 @@ class Admin extends CI_Controller {
         $this->load->helper('form');
         // Gunakan alias jika Anda ingin memanggil dengan huruf kapital 'M_admin'
         $this->load->model('M_admin', 'M_admin');
+
+        if (!$this->session->userdata('admin_id')) {
+        redirect('auth');
+}
     }
 
     public function index()
@@ -157,7 +161,6 @@ class Admin extends CI_Controller {
     // show tambah form
     public function tambah()
     {
-        $token = bin2hex(random_bytes(8)); // Menghasilkan kode unik seperti 'a1b2c3d4' 
         $data['opd'] = $this->M_admin->get_opd();
 
         $this->load->view('admin/header');
@@ -179,6 +182,50 @@ class Admin extends CI_Controller {
             $this->session->set_flashdata('success', 'Kegiatan berhasil ditambahkan.');
         } else {
             $this->session->set_flashdata('error', 'Gagal menambahkan kegiatan.');
+        }
+        redirect('admin/kegiatan');
+    }
+
+    // Fungsi untuk menampilkan halaman edit
+public function edit($id)
+{
+    // Ambil data kegiatan berdasarkan ID
+    $data['kegiatan'] = $this->db->get_where('tbl_kegiatan', ['ID_KEGIATAN' => $id])->row();
+    $data['opd'] = $this->M_admin->get_opd();
+
+    // Jika data tidak ditemukan
+    if (!$data['kegiatan']) {
+        $this->session->set_flashdata('error', 'Data kegiatan tidak ditemukan.');
+        redirect('admin/kegiatan');
+    }
+
+    $this->load->view('admin/header');
+    $this->load->view('admin/sidebar');
+    $this->load->view('admin/edit_kegiatan', $data); // Nama file view kita
+    $this->load->view('admin/footer');
+}
+
+    // update data
+    public function update()
+    {
+        $id = $this->input->post('ID_KEGIATAN');
+        $data = [
+            'NAMA' => $this->input->post('NAMA'),
+            'TEMPAT' => $this->input->post('TEMPAT'),
+            'JAM' => $this->input->post('JAM'),
+            'TANGGAL' => $this->input->post('TANGGAL'),
+            'SKPD_PENYELENGGARA' => $this->input->post('SKPD_PENYELENGGARA'),
+            'PIMPINAN_RAPAT' => $this->input->post('PIMPINAN_RAPAT'),
+            'ID_OPD' => $this->input->post('ID_OPD'),
+            'JML_PESERTA' => $this->input->post('JML_PESERTA'),
+            'JAM_PELAJARAN' => $this->input->post('JAM_PELAJARAN'),
+        ];
+
+        $this->db->where('ID_KEGIATAN', $id);
+        if ($this->db->update('tbl_kegiatan', $data)) {
+            $this->session->set_flashdata('success', 'Kegiatan berhasil diperbarui.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal memperbarui kegiatan.');
         }
         redirect('admin/kegiatan');
     }

@@ -63,7 +63,7 @@
 
                             <div class="row mt-4">
                                 <div class="col-md-12">
-                                    <a href="<?= base_url('admin/kegiatan'); ?>" class="btn btn-secondary">
+                                    <a href="<?= base_url('admin/dashboard'); ?>" class="btn btn-secondary">
                                         <i class="fas fa-arrow-left"></i> Kembali
                                     </a>
                                     <button class="btn btn-primary" onclick="window.print()">
@@ -76,7 +76,7 @@
                             <div class="alert alert-warning">
                                 Data tidak ditemukan!
                             </div>
-                            <a href="<?= base_url('admin/kegiatan'); ?>" class="btn btn-secondary">
+                            <a href="<?= base_url('admin/dashboard'); ?>" class="btn btn-secondary">
                                 <i class="fas fa-arrow-left"></i> Kembali
                             </a>
                             <?php endif; ?>

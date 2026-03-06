@@ -56,6 +56,6 @@ $route['admin/kegiatan'] = 'admin/kegiatan';
 $route['admin/rekap/search'] = 'admin/rekap_search';
 $route['admin/rekap'] = 'admin/rekap';
 
-$route['default_controller'] = 'welcome';
+$route['default_controller'] = 'auth';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
