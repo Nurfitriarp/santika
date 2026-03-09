@@ -16,7 +16,7 @@
                         <h1 class="h5 mb-0 text-gray-800 font-weight-bold">Kelola User</h1>
                     </div>
                     
-
+ 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
 
@@ -56,17 +56,6 @@
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
-                    <!-- Flashdata Alert -->
-                    <?php $CI =& get_instance(); ?>
-                    <?php if ($CI->session->flashdata('success')): ?>
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <?= $CI->session->flashdata('success') ?>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    <?php endif; ?>
-
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800"></h1>
@@ -78,131 +67,42 @@
 
                     <div class="row justify-content-center">
                      
-    <div class="container-fluid">
+    <div class="col-xl-12 col-lg-12">
     <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Daftar Admin / User</h6>
-        </div>
-        <form class="form-inline navbar-search" method="POST" action="<?= base_url('superadmin/kelola_user/search'); ?>">
-        <?= form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Daftar Admin / User</h6> 
+            
+            <form class="form-inline navbar-search" method="POST" action="<?= base_url('superadmin/kelola_user/search'); ?>">
+                <?= form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>
                 <div class="input-group">
-                    <input type="text" name="keyword" class="form-control bg-light border-5 small" placeholder="Cari User..."
-                                aria-label="Search" aria-describedby="basic-addon2" value="<?= isset($keyword) ? $keyword : ''; ?>">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="submit">
-                                    <i class="fas fa-search fa-sm"></i>
-                                </button>
-                            </div>
-                        </div>
-        </form>
-                        <div class="card-body">
-                    <!-- Flashdata Error Alert -->
-                    <?php if ($CI->session->flashdata('error')): ?>
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <?= $CI->session->flashdata('error') ?>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if(isset($keyword) && !empty($keyword)): ?>
-                        <div class="alert alert-info">
-                            Hasil pencarian untuk: <strong><?= htmlspecialchars($keyword); ?></strong>
-                            <a href="<?= base_url('superadmin/kegiatan'); ?>" class="float-right">Bersihkan pencarian</a>
-                        </div>
-                    <?php endif; ?>
-                    <?php if(!empty($kegiatan)): ?>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover" width="100%" cellspacing="0">
-                            <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Kegiatan</th>
-                                <th>Tanggal</th>
-                                <th>Tempat</th>
-                                <th>Pemimpin Rapat</th>
-                                <th class="text-center" width="auto">QR Presensi</th>
-                                <th class="text-center" width="auto">Aksi</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <?php $no = 1; foreach($kegiatan as $row): ?>
-                            <tr>
-                                <th scope="row"><?= $no++; ?></th>
-                                <td><?= $row->NAMA ?></td>
-                                <td><?= $row->TANGGAL ?></td>
-                                <td><?= $row->TEMPAT ?></td>
-                                <td><?= $row->PIMPINAN_RAPAT ?></td>
-                                <td class="text-center">
-                                    <?php 
-                                        if(!empty($row->qr_token)): 
-                                            $this->load->helper('url'); // Pastikan helper url aktif
-            
-                                            // Membuat slug dari nama kegiatan
-                                            $slug_nama = url_title($row->NAMA, 'dash', TRUE); 
-            
-                                            // URL baru: presensi/isi/[token]/[nama-kegiatan]
-                                            $url_presensi = base_url('presensi/isi/' . $row->qr_token . '/' . $slug_nama);
-            
-                                            $qr_api = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" . urlencode($url_presensi);
-                                    ?>
-                                        <a href="<?= $qr_api ?>" target="_blank" title="Klik untuk Cetak">
-                                            <img src="<?= $qr_api ?>" width="50" style="border: 1px solid #ddd;">
-                                        </a>
-                                    <?php else: ?>
-                                        <span class="badge badge-secondary">Token Belum Ada</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td class="text-center" style="vertical-align: middle;">
-                                    <div class="d-flex justify-content-center align-items-center" style="gap: 5px; min-width: 120px;">
-                                        <a href="<?= base_url('superadmin/detail/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-primary" title="Detail">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="<?= base_url('superadmin/edit/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-warning" title="Edit">
-                                            <i class="fas fa-edit text-white"></i>
-                                        </a>
-                                        <a href="<?= base_url('superadmin/hapus/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-danger" title="Hapus" onclick="return confirm('Yakin ingin menghapus kegiatan ini?');">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                        </table>
+                    <input type="text" name="keyword" class="form-control bg-light border-5 small" placeholder="Cari Nama/Username..."
+                        aria-label="Search" aria-describedby="basic-addon2" value="<?= isset($keyword) ? $keyword : ''; ?>">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search fa-sm"></i>
+                        </button>
                     </div>
-                    <?php else: ?>
-                    <div class="table-responsive">
-                        <?php if(isset($keyword) && !empty($keyword)): ?>
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <i class="fas fa-search"></i> <strong>Tidak Ada Hasil!</strong><br>
-                                Pencarian untuk "<strong><?= htmlspecialchars($keyword); ?></strong>" tidak menemukan data. Coba gunakan kata kunci yang berbeda.
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        <?php else: ?>
-                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                <i class="fas fa-info-circle"></i> <strong>Tidak Ada Data</strong><br>
-                                Belum ada kegiatan yang terdaftar. Silakan <a href="<?= base_url('superadmin/tambah_user'); ?>">tambah user baru</a>.
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                    <?php endif; ?>
                 </div>
-
-
-
-
-
+            </form>
+        </div>
 
         <div class="card-body">
+            <?php if ($this->session->flashdata('success')): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?= $this->session->flashdata('success') ?>
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+            <?php endif; ?>
+
+            <?php if(isset($keyword) && !empty($keyword)): ?>
+                <div class="alert alert-info">
+                    Menampilkan hasil pencarian untuk: <strong><?= htmlspecialchars($keyword); ?></strong>
+                    <a href="<?= base_url('superadmin/kelola_user'); ?>" class="float-right">Bersihkan</a>
+                </div>
+            <?php endif; ?>
+
             <div class="table-responsive">
-                <table class="table table-bordered" width="100%" cellspacing="0">
+                <table class="table table-bordered table-hover" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -210,32 +110,46 @@
                             <th>Username</th>
                             <th>Perangkat Daerah</th>
                             <th>Role</th>
-                            <th>Aksi</th>
+                            <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php $no = 1; foreach($all_users as $user): ?>
-                        <tr>
-                            <td><?= $no++; ?></td>
-                            <td><?= $user->NAMA; ?></td>
-                            <td><?= $user->USERNAME; ?></td>
-                            <td><?= $user->PERANGKAT_DAERAH; ?></td>
-                            <td>
-                                <span class="badge <?= $user->ROLE == 'super_admin' ? 'badge-danger' : 'badge-info'; ?>">
-                                    <?= strtoupper($user->ROLE ?? 'ADMIN'); ?>
-                                </span>
-                            </td>
-                            <td>
-                                <a href="<?= base_url('superadmin/edit_user/'.$user->ID); ?>" class="btn btn-warning btn-sm">Edit</a>
-                                <a href="<?= base_url('superadmin/hapus_user/'.$user->ID); ?>" 
-                                   class="btn btn-danger btn-sm" 
-                                   onclick="return confirm('Yakin hapus user ini?')">Hapus</a>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
+                        <?php if(!empty($all_users)): ?>
+                            <?php $no = 1; foreach($all_users as $user): ?>
+                            <tr>
+                                <td><?= $no++; ?></td>
+                                <td><?= $user->NAMA; ?></td>
+                                <td><?= $user->USERNAME; ?></td>
+                                <td><?= $user->PERANGKAT_DAERAH; ?></td>
+                                <td>
+                                    <span class="badge <?= $user->ROLE == 'super_admin' ? 'badge-danger' : 'badge-info'; ?>">
+                                        <?= strtoupper($user->ROLE ?? 'ADMIN'); ?>
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <a href="<?= base_url('superadmin/edit_user/'.$user->ID); ?>" class="btn btn-warning btn-sm" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="<?= base_url('superadmin/hapus_user/'.$user->ID); ?>" 
+                                       class="btn btn-danger btn-sm" 
+                                       onclick="return confirm('Yakin hapus user ini?')" title="Hapus">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="6" class="text-center">Data user tidak ditemukan.</td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+</div>
+                        </div>
+                        </div>
+
 </div>

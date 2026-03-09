@@ -39,7 +39,7 @@ class Superadmin extends MY_Controller {
     // Debugging (Opsional: Hapus jika sudah jalan)
     // die(print_r($data['admin'])); 
 
-    $data['logs'] = $this->M_admin->get_activity_logs(null, 10);
+    $data['logs'] = $this->M_admin->get_activity_logs(null, 5);
     
     $this->load->view('superadmin/header');
     $this->load->view('superadmin/sidebar', $data); // Pastikan data dikirim ke sidebar jika perlu
@@ -49,7 +49,7 @@ class Superadmin extends MY_Controller {
 
     // AJAX untuk Real-Time Update Activity Log
     public function get_latest_logs_ajax() {
-        $logs = $this->M_admin->get_activity_logs(null, 10);
+        $logs = $this->M_superadmin->get_activity_logs(5);
         $output = '';
         if(!empty($logs)) {
             foreach($logs as $log) {
@@ -227,18 +227,38 @@ public function detail($id)
     }
 
     // UNTUK KELOLA USER
-    public function kelola_user() {
+        public function kelola_user() {
         $admin_id = $this->session->userdata('admin_id');
-    
-        // Data untuk profil admin yang sedang login
-        $data['admin'] = $this->db->get_where('tbl_user', ['ID' => $admin_id])->row();
-    
-        // Data semua user untuk isi tabel
-        $data['all_users'] = $this->M_superadmin->get_all_users();
 
+        // 1. Data profil admin yang login (untuk header/sidebar)
+        $data['admin'] = $this->db->get_where('tbl_user', ['ID' => $admin_id])->row();
+        $data['superadmin'] = $data['admin']; // Sesuaikan jika view pakai variabel $superadmin
+
+        // 2. Logika Pencarian
+        $keyword = $this->input->post('keyword'); // Tangkap input dari form pencarian
+        
+        if (!empty($keyword)) {
+            // Jika user sedang mencari sesuatu
+            $this->db->like('NAMA', $keyword);
+            $this->db->or_like('USERNAME', $keyword);
+            $this->db->or_like('PERANGKAT_DAERAH', $keyword);
+            $data['all_users'] = $this->db->get('tbl_user')->result();
+            $data['keyword'] = $keyword; // Kirim kata kunci kembali ke view
+        } else {
+            // Jika tidak ada pencarian, tampilkan semua user
+            $data['all_users'] = $this->M_superadmin->get_all_users();
+            $data['keyword'] = null;
+        }
+
+        // 3. PENTING: Inisialisasi variabel $kegiatan agar View tidak error
+        // Karena di View Anda ada pengecekan if(!empty($kegiatan)), 
+        // kita beri nilai array kosong agar alert "Tidak Ada Data Kegiatan" tidak muncul secara paksa.
+        $data['kegiatan'] = []; 
+
+        // 4. Load View
         $this->load->view('superadmin/header');
-        $this->load->view('superadmin/sidebar');
-        $this->load->view('superadmin/kelola_user', $data); // Halaman tabel user
+        $this->load->view('superadmin/sidebar', $data); // Kirim $data ke sidebar agar foto profil muncul
+        $this->load->view('superadmin/kelola_user', $data);
         $this->load->view('superadmin/footer');
     }
 

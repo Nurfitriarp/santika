@@ -85,7 +85,7 @@ class M_superadmin extends CI_Model {
         return $this->db->trans_status();
     }
 
-    public function get_activity_logs($limit = 10) {
+    public function get_activity_logs($limit = 5) {
         $this->db->select('activity_logs.*, tbl_user.NAMA as nama_user'); // Kita beri alias nama_user
         $this->db->from('activity_logs');
         $this->db->join('tbl_user', 'tbl_user.ID = activity_logs.user_id', 'left');

@@ -13,7 +13,7 @@
                     </button>
 
                     <div class="d-none d-lg-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100">
-                        <h1 class="h5 mb-0 text-gray-800 font-weight-bold">My Profile</h1>
+                        <h1 class="h5 mb-0 text-gray-800 font-weight-bold">Profil Saya</h1>
                     </div>
                     
 
@@ -84,7 +84,7 @@
                               <span aria-hidden="true">&times;</span>
                             </button>
                           </div>
-                          <form method="post" action="<?= base_url('admin/change_password'); ?>">
+                          <form method="post" action="<?= base_url('superadmin/change_password'); ?>">
                               <div class="modal-body">
                                   <div class="form-group">
                                       <label for="old_password">Password Lama</label>
