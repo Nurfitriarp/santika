@@ -18,6 +18,11 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Bidang</label>
+                    <input type="text" name="bidang" class="form-control" value="<?= $user_item->BIDANG; ?>" required>
+                </div>
+
+                <div class="form-group">
                     <label>Username</label>
                     <input type="text" name="username" class="form-control" value="<?= $user_item->USERNAME; ?>" required>
                 </div>
