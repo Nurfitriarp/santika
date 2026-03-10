@@ -103,8 +103,7 @@
         <img src="<?= base_url('assets/img/logokabupaten.png') ?>" class="logo" alt="Logo">
         
         <div class="sub-title">PEMERINTAH KABUPATEN MALANG</div>
-        <h2>SCAN QR CODE</h2>
-        <div class="organizer"><?= $kegiatan->TANGGAL ?></div>
+        <h2>SCAN QR</h2>
 
         <div class="qr-wrapper">
             <?php 
@@ -117,6 +116,35 @@
         <div class="event-name">
             <?= $kegiatan->NAMA ?>
         </div>
+        <?php
+            // Asumsikan $kegiatan->TANGGAL berisi '2026-03-11'
+            $tanggal = $kegiatan->TANGGAL; 
+
+            // Membuat array daftar hari Indonesia
+            $daftar_hari = [
+                'Sunday' => 'Minggu',
+                'Monday' => 'Senin',
+                'Tuesday' => 'Selasa',
+                'Wednesday' => 'Rabu',
+                'Thursday' => 'Kamis',
+                'Friday' => 'Jumat',
+                'Saturday' => 'Sabtu'
+            ];
+
+            // Mendapatkan nama hari Inggris lalu dikonversi ke Indonesia
+            $nama_hari_inggris = date('l', strtotime($tanggal));
+            $nama_hari_indo = $daftar_hari[$nama_hari_inggris];
+
+            // Format tanggal Indonesia (d-m-Y)
+            $tanggal_indo = date('d-m-Y', strtotime($tanggal));
+        ?>
+
+        <div class="text-center">
+            <h5 class="font-weight-bold mb-0"><?= $nama_hari_indo ?></h5>
+            <p><?= $tanggal_indo ?></p>
+        </div>
+        <div class="organizer"><?= $kegiatan->JAM ?></div>
+        <div class="organizer"><?= $kegiatan->TEMPAT ?></div>
     </div>
 
     <div class="no-print" style="position: fixed; bottom: 20px; right: 20px;">
@@ -126,3 +154,4 @@
 
 </body>
 </html>
+

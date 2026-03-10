@@ -9,6 +9,14 @@
         body { background-color: #f8f9fc; }
         .card { border-radius: 15px; }
         .header-presensi { background: #4e73df; color: white; padding: 20px; border-radius: 15px 15px 0 0; }
+        .signature-pad {
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            width: 100%;
+            height: 200px;
+            cursor: crosshair;
+            background-color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -29,8 +37,9 @@
 
                             <div class="form-group">
                                 <label class="font-weight-bold">Nama Lengkap</label>
-                                <input type="text" name="NAMA" class="form-control" placeholder="Masukkan nama..." required>
-                            </div>
+                                <input type="text" name="NAMA" class="form-control" 
+                                    value="<?= isset($lama) ? $lama->NAMA : '' ?>" required>
+                            </div>  
 
                             <div class="form-group">
                                 <label class="font-weight-bold">Jenis Kelamin</label>
@@ -46,7 +55,9 @@
                                 <select name="ID_OPD" class="form-control" required>
                                     <option value="">-- Pilih Instansi --</option>
                                     <?php foreach($opd as $o): ?>
-                                        <option value="<?= $o->ID_OPD ?>"><?= $o->NAMA_OPD ?></option>
+                                        <option value="<?= $o->ID_OPD ?>" <?= (isset($lama) && $lama->ID_OPD == $o->ID_OPD) ? 'selected' : '' ?>>
+                                            <?= $o->NAMA_OPD ?>
+                                        </option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -79,9 +90,44 @@
                         </form>
                     </div>
                 </div>
-                <p class="text-center mt-3 text-muted small">&copy; 2026 Diskominfostandi - SANTIKA</p>
+                <p class="text-center mt-3 text-muted small">&copy; 2026 Diskominfo - ANTIKA</p>
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+
+    <script>
+        const canvas = document.getElementById('signature-pad');
+        const signaturePad = new SignaturePad(canvas);
+        const form = document.querySelector('form');
+        const ttdInput = document.getElementById('ttd_image');
+
+        // Menangani tombol hapus
+        document.getElementById('clear').addEventListener('click', function () {
+            signaturePad.clear();
+        });
+
+        // Sebelum form dikirim, masukkan data gambar ke input hidden
+        form.addEventListener('submit', function (e) {
+            if (signaturePad.isEmpty()) {
+                alert("Silakan bubuhkan tanda tangan terlebih dahulu.");
+                e.preventDefault();
+            } else {
+                const dataUrl = signaturePad.toDataURL();
+                ttdInput.value = dataUrl;
+            }
+        });
+
+        // Menyesuaikan ukuran kanvas agar responsif
+        function resizeCanvas() {
+            const ratio =  Math.max(window.devicePixelRatio || 1, 1);
+            canvas.width = canvas.offsetWidth * ratio;
+            canvas.height = canvas.offsetHeight * ratio;
+            canvas.getContext("2d").scale(ratio, ratio);
+            signaturePad.clear();
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+    </script>
 </body>
 </html>
