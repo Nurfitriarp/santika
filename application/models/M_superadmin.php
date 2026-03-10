@@ -103,4 +103,56 @@ class M_superadmin extends CI_Model {
     public function get_user_by_id($id) {
     return $this->db->get_where('tbl_user', ['ID' => $id])->row();
 }
+
+// ==========================================
+    // MODEL UNTUK KELOLA JENIS PERANGKAT DAERAH
+    // ==========================================
+
+    /**
+     * Mengambil semua data jenis OPD untuk ditampilkan di tabel
+     */
+    public function get_all_jenis_opd() {
+        $this->db->order_by('ID_J-OPD', 'DESC');
+        return $this->db->get('tbl_jenis_opd')->result();
+    }
+
+    /**
+     * Mengambil satu data jenis OPD berdasarkan ID untuk proses EDIT
+     * Catatan: Menggunakan kurung kurawal karena nama kolom mengandung karakter khusus '-'
+     */
+    public function get_jenis_opd_by_id($id) {
+        return $this->db->get_where('tbl_jenis_opd', ['ID_J-OPD' => $id])->row();
+    }
+
+    /**
+     * Proses simpan data jenis OPD baru
+     */
+    public function insert_jenis_opd($data) {
+        return $this->db->insert('tbl_jenis_opd', $data);
+    }
+
+    /**
+     * Proses update data jenis OPD
+     */
+    public function update_jenis_opd($id, $data) {
+        $this->db->where('ID_J-OPD', $id);
+        return $this->db->update('tbl_jenis_opd', $data);
+    }
+
+    /**
+     * Proses hapus data jenis OPD
+     */
+    public function delete_jenis_opd($id) {
+        $this->db->where('ID_J-OPD', $id);
+        return $this->db->delete('tbl_jenis_opd');
+    }
+
+    /**
+     * Fungsi pencarian khusus untuk jenis OPD
+     */
+    public function search_jenis_opd($keyword) {
+        $this->db->like('NAMA_OPD', $keyword);
+        $this->db->order_by('ID_J-OPD', 'DESC');
+        return $this->db->get('tbl_jenis_opd')->result();
+    }
 }

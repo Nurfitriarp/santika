@@ -482,4 +482,115 @@ public function detail($id)
     $this->load->view('superadmin/cetak_qr_view', $data);
 }
 
+// ==========================================
+    // KELOLA JENIS PERANGKAT DAERAH (OPD)
+    // ==========================================
+
+    public function jenispd()
+    {
+        $admin_id = $this->session->userdata('admin_id');
+        $data['superadmin'] = $this->db->get_where('tbl_user', ['ID' => $admin_id])->row();
+
+        // Mengambil data dari tbl_jenis_opd
+        // Variabel $kegiatan digunakan agar sinkron dengan foreach di view jenispd.php Anda
+        $data['master'] = $this->db->get('tbl_jenis_opd')->result();
+        $data['keyword'] = null;
+
+        $this->load->view('superadmin/header');
+        $this->load->view('superadmin/sidebar', $data);
+        $this->load->view('superadmin/jenispd', $data);
+        $this->load->view('superadmin/footer');
+    }
+
+    public function tambahjenispd()
+    {
+        $admin_id = $this->session->userdata('admin_id');
+        $data['superadmin'] = $this->db->get_where('tbl_user', ['ID' => $admin_id])->row();
+
+        $this->load->view('superadmin/header');
+        $this->load->view('superadmin/sidebar', $data);
+        $this->load->view('superadmin/tambah_jenispd', $data); // Pastikan view ini tersedia
+        $this->load->view('superadmin/footer');
+    }
+
+    public function simpan_jenispd()
+    {
+        $nama_opd = $this->input->post('NAMA_OPD');
+        $data = ['NAMA_OPD' => $nama_opd];
+
+        if ($this->db->insert('tbl_jenis_opd', $data)) {
+            log_activity('ADD', 'Menambahkan jenis perangkat daerah baru: ' . $nama_opd);
+            $this->session->set_flashdata('success', 'Jenis Perangkat Daerah berhasil ditambahkan.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal menambahkan data.');
+        }
+        redirect('superadmin/jenispd');
+    }
+
+    public function editpd($id)
+    {
+        $admin_id = $this->session->userdata('admin_id');
+        $data['superadmin'] = $this->db->get_where('tbl_user', ['ID' => $admin_id])->row();
+        
+        // Ambil data berdasarkan ID_J-OPD (sesuai SS database)
+        $data['jenispd'] = $this->db->get_where('tbl_jenis_opd', ['ID_J-OPD' => $id])->row();
+
+        if (!$data['jenispd']) {
+            $this->session->set_flashdata('error', 'Data tidak ditemukan.');
+            redirect('superadmin/jenispd');
+        }
+
+        $this->load->view('superadmin/header');
+        $this->load->view('superadmin/sidebar', $data);
+        $this->load->view('superadmin/edit_jenispd', $data); // Pastikan view ini tersedia
+        $this->load->view('superadmin/footer');
+    }
+
+    public function updatepd()
+    {
+        $id = $this->input->post('ID_J_OPD');
+        $nama_opd = $this->input->post('NAMA_OPD');
+
+        $this->db->where('ID_J-OPD', $id);
+        if ($this->db->update('tbl_jenis_opd', ['NAMA_OPD' => $nama_opd])) {
+            log_activity('EDIT', 'Memperbarui jenis perangkat daerah: ' . $nama_opd);
+            $this->session->set_flashdata('success', 'Data berhasil diperbarui.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal memperbarui data.');
+        }
+        redirect('superadmin/jenispd');
+    }
+
+    public function hapuspd($id)
+    {
+        // Ambil data dulu untuk log
+        $item = $this->db->get_where('tbl_jenis_opd', ['ID_J-OPD' => $id])->row();
+        $nama = ($item) ? $item->NAMA_OPD : 'ID: ' . $id;
+
+        $this->db->where('ID_J-OPD', $id);
+        if ($this->db->delete('tbl_jenis_opd')) {
+            log_activity('DELETE', 'Menghapus jenis perangkat daerah: ' . $nama);
+            $this->session->set_flashdata('success', 'Data berhasil dihapus.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal menghapus data.');
+        }
+        redirect('superadmin/jenispd');
+    }
+
+    public function search_jenispd()
+    {
+        $keyword = $this->input->post('keyword');
+        $admin_id = $this->session->userdata('admin_id');
+        $data['superadmin'] = $this->db->get_where('tbl_user', ['ID' => $admin_id])->row();
+
+        $this->db->like('NAMA_OPD', $keyword);
+        $data['kegiatan'] = $this->db->get('tbl_jenis_opd')->result();
+        $data['keyword'] = $keyword;
+
+        $this->load->view('superadmin/header');
+        $this->load->view('superadmin/sidebar', $data);
+        $this->load->view('superadmin/jenispd', $data);
+        $this->load->view('superadmin/footer');
+    }
+
 }

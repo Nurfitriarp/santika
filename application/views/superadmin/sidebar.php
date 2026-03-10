@@ -20,12 +20,32 @@
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
-
+            
+              <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+                    aria-expanded="true" aria-controls="collapseUtilities">
+                    <i class="fas fa-fw fa-wrench"></i>
+                    <span>Master</span>
+                </a>
+                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="jenispd">Jenis Perangkat Daerah</a>
+                        <a class="collapse-item" href="perda">Perangkat Daerah</a>
+                </div>
+            </li>
             <!-- Nav Item - Kelola Kegiatan -->
             <li class="nav-item <?php echo ($current_segment == 'kelola_user') ? 'active' : ''; ?>">
                 <a class="nav-link" href="<?= base_url('superadmin/kelola_user'); ?>">
                     <i class="fas fa-fw fa-calendar-alt"></i>
                     <span>Kelola User</span></a>
+            </li>
+
+            <!-- Nav Item - Kelola Jenis PD & PD -->
+            <li class="nav-item <?php echo ($current_segment == 'master') ? 'active' : ''; ?>">
+                <a class="nav-link" href="<?= base_url('superadmin/master'); ?>">
+                    <i class="fas fa-fw fa-calendar-alt"></i>
+                    <span>Kelola Master</span></a>
             </li>
 
             <!-- Nav Item - Kegiatan -->
