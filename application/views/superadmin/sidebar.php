@@ -2,13 +2,15 @@
         <ul class="navbar-nav bg-gradient-dark sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?= base_url('admin'); ?>">
-                <div class="sidebar-brand-icon">
-                    <img src="<?= base_url('assets/img/logo.png'); ?>" width="60" alt="Logo">
-                </div>
-                <div class="sidebar-brand-text mx-3">Santika</div>
+           <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?= base_url('superadmin'); ?>">
+            <div class="sidebar-brand-icon">
+                <img src="<?= base_url('assets/img/logokabmal.png'); ?>" width="40" alt="Logo">
+            </div>
+            <div class="sidebar-brand-text mx-3 text-left">
+                <div style="font-size: 11px; font-weight: 300; margin-bottom: -5px;">APLIKASI</div>
+                <div style="font-size: 16px; font-weight: 700;">ABSENSI</div>
+            </div>
             </a>
-
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
@@ -39,13 +41,6 @@
                 <a class="nav-link" href="<?= base_url('superadmin/kelola_user'); ?>">
                     <i class="fas fa-fw fa-calendar-alt"></i>
                     <span>Kelola User</span></a>
-            </li>
-
-            <!-- Nav Item - Kelola Jenis PD & PD -->
-            <li class="nav-item <?php echo ($current_segment == 'master') ? 'active' : ''; ?>">
-                <a class="nav-link" href="<?= base_url('superadmin/master'); ?>">
-                    <i class="fas fa-fw fa-calendar-alt"></i>
-                    <span>Kelola Master</span></a>
             </li>
 
             <!-- Nav Item - Kegiatan -->

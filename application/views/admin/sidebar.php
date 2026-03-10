@@ -4,9 +4,12 @@
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?= base_url('admin'); ?>">
                 <div class="sidebar-brand-icon">
-                    <img src="<?= base_url('assets/img/logo.png'); ?>" width="60" alt="Logo">
+                    <img src="<?= base_url('assets/img/logokabmal.png'); ?>" width="40" alt="Logo">
                 </div>
-                <div class="sidebar-brand-text mx-3">Santika</div>
+                <div class="sidebar-brand-text mx-3 text-left">
+                    <div style="font-size: 11px; font-weight: 300; margin-bottom: -5px;">APLIKASI</div>
+                    <div style="font-size: 16px; font-weight: 700;">ABSENSI</div>
+                </div>
             </a>
 
             <!-- Divider -->
