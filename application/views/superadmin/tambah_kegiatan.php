@@ -65,8 +65,8 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Simpan</button>
                 <a href="<?= base_url('superadmin/kegiatan') ?>" class="btn btn-secondary">Batal</a>
+                <button type="submit" class="btn btn-primary">Simpan</button>
             </form>
         </div>
     </div>

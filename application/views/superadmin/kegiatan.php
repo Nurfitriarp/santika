@@ -137,20 +137,19 @@
                                 <td><?= $row->TEMPAT ?></td>
                                 <td><?= $row->PIMPINAN_RAPAT ?></td>
                                 <td class="text-center">
-                                    <?php 
-                                        if(!empty($row->qr_token)): 
-                                            $this->load->helper('url'); // Pastikan helper url aktif
-            
-                                            // Membuat slug dari nama kegiatan
+                                    <?php if(!empty($row->qr_token)): ?>
+                                        <?php 
+                                            $this->load->helper('url');
+                                            // GANTI $row->ID menjadi $row->ID_KEGIATAN
+                                            $url_cetak = base_url('superadmin/cetak_qr/' . $row->ID_KEGIATAN); 
+                                            
                                             $slug_nama = url_title($row->NAMA, 'dash', TRUE); 
-            
-                                            // URL baru: presensi/isi/[token]/[nama-kegiatan]
                                             $url_presensi = base_url('presensi/isi/' . $row->qr_token . '/' . $slug_nama);
-            
                                             $qr_api = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" . urlencode($url_presensi);
-                                    ?>
-                                        <a href="<?= $qr_api ?>" target="_blank" title="Klik untuk Cetak">
+                                        ?>
+                                        <a href="<?= $url_cetak ?>" target="_blank" title="Klik untuk Cetak">
                                             <img src="<?= $qr_api ?>" width="50" style="border: 1px solid #ddd;">
+                                            <br><small>Cetak QR</small>
                                         </a>
                                     <?php else: ?>
                                         <span class="badge badge-secondary">Token Belum Ada</span>

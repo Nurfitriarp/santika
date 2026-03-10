@@ -468,4 +468,18 @@ public function detail($id)
         redirect('superadmin/dashboard');
     }
 }
+
+    public function cetak_qr($id)
+{
+    // Query disesuaikan dengan nama kolom ID_KEGIATAN
+    $kegiatan = $this->db->get_where('tbl_kegiatan', ['ID_KEGIATAN' => $id])->row();
+
+    if (!$kegiatan) {
+        show_404();
+    }
+
+    $data['kegiatan'] = $kegiatan;
+    $this->load->view('superadmin/cetak_qr_view', $data);
+}
+
 }
