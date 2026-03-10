@@ -30,16 +30,16 @@ class Admin extends MY_Controller {
 
     public function dashboard()
     {
-        // Profile page - fetch admin data from tbl_user
-        $admin_id = $this->session->userdata('admin_id') ?: 1; // default to 1 if not set
-        // include spaces in column name by aliasing it to a valid property
+        // Profile page - fetch admin data
+        $admin_id = $this->session->userdata('admin_id');
+        
         $data['admin'] = $this->db
             ->select("*, PERANGKAT_DAERAH")
             ->get_where('tbl_user', ['ID' => $admin_id])
             ->row();
         
-        // Ambil activity logs
-        $data['activity_logs'] = $this->M_admin->get_activity_logs(null, 10);
+        // SESUAIKAN: Pastikan variabelnya 'logs' agar cocok dengan view Anda
+        $data['logs'] = $this->M_admin->get_activity_logs(null, 5);
         
         $this->load->view('admin/header');
         $this->load->view('admin/sidebar');
@@ -47,14 +47,19 @@ class Admin extends MY_Controller {
         $this->load->view('admin/footer');
     }
 
-    // AJAX untuk Real-Time Update Activity Log
+   // AJAX untuk Real-Time Update Activity Log
     public function get_latest_logs_ajax() {
-    $data['logs'] = $this->M_admin->get_activity_logs(null, 10);
+        // PERBAIKAN: Ambil data ke variabel $logs terlebih dahulu
+        $logs = $this->M_admin->get_activity_logs(null, 5);
         $output = '';
+        
         if(!empty($logs)) {
             foreach($logs as $log) {
-                $nama = isset($log->nama_user) ? $log->nama_user : 'System';
+                // Gunakan nama_user jika ada, jika tidak pakai NAMA dari tabel user, default System
+                $nama = isset($log->nama_user) ? $log->nama_user : (isset($log->NAMA) ? $log->NAMA : 'System');
                 $waktu = date('d M Y, H:i', strtotime($log->created_at));
+                
+                // Pastikan helper activity sudah di-load di __construct
                 $warna = get_badge_color($log->activity_type);
                 $tipe = strtoupper($log->activity_type);
 
@@ -206,12 +211,14 @@ class Admin extends MY_Controller {
     public function simpan()
     {
         $input = $this->input->post();
-        // generate token otomatis sebelum simpan
         $input['qr_token'] = bin2hex(random_bytes(10));
         
         $insert_id = $this->M_admin->insert_kegiatan($input);
 
         if ($insert_id) {
+            // CATAT LOG: Menggunakan helper Anda
+            log_activity('ADD', "Menambahkan kegiatan baru: " . $input['NAMA']);
+            
             $this->session->set_flashdata('success', 'Kegiatan berhasil ditambahkan.');
         } else {
             $this->session->set_flashdata('error', 'Gagal menambahkan kegiatan.');
@@ -220,30 +227,30 @@ class Admin extends MY_Controller {
     }
 
     // Fungsi untuk menampilkan halaman edit
-public function edit($id)
-{
-    // Ambil data kegiatan berdasarkan ID
-    $data['kegiatan'] = $this->db->get_where('tbl_kegiatan', ['ID_KEGIATAN' => $id])->row();
-    $data['opd'] = $this->M_admin->get_opd();
+    public function edit($id)
+    {
+        $data['kegiatan'] = $this->db->get_where('tbl_kegiatan', ['ID_KEGIATAN' => $id])->row();
+        $data['opd'] = $this->M_admin->get_opd();
 
-    // Jika data tidak ditemukan
-    if (!$data['kegiatan']) {
-        $this->session->set_flashdata('error', 'Data kegiatan tidak ditemukan.');
-        redirect('admin/kegiatan');
+        if (!$data['kegiatan']) {
+            $this->session->set_flashdata('error', 'Data kegiatan tidak ditemukan.');
+            redirect('admin/kegiatan');
+        }
+
+        $this->load->view('admin/header');
+        $this->load->view('admin/sidebar');
+        $this->load->view('admin/edit_kegiatan', $data);
+        $this->load->view('admin/footer');
     }
-
-    $this->load->view('admin/header');
-    $this->load->view('admin/sidebar');
-    $this->load->view('admin/edit_kegiatan', $data); // Nama file view kita
-    $this->load->view('admin/footer');
-}
 
     // update data
     public function update()
     {
         $id = $this->input->post('ID_KEGIATAN');
+        $nama_kegiatan = $this->input->post('NAMA'); // Ambil nama untuk log
+        
         $data = [
-            'NAMA' => $this->input->post('NAMA'),
+            'NAMA' => $nama_kegiatan,
             'TEMPAT' => $this->input->post('TEMPAT'),
             'JAM' => $this->input->post('JAM'),
             'TANGGAL' => $this->input->post('TANGGAL'),
@@ -256,6 +263,9 @@ public function edit($id)
 
         $this->db->where('ID_KEGIATAN', $id);
         if ($this->db->update('tbl_kegiatan', $data)) {
+            // CATAT LOG: Tipe 'EDIT'
+            log_activity('EDIT', "Memperbarui data kegiatan: " . $nama_kegiatan);
+            
             $this->session->set_flashdata('success', 'Kegiatan berhasil diperbarui.');
         } else {
             $this->session->set_flashdata('error', 'Gagal memperbarui kegiatan.');
@@ -271,8 +281,15 @@ public function edit($id)
             redirect('admin/kegiatan');
         }
 
+        // Ambil nama kegiatan sebelum dihapus agar bisa dicatat di log
+        $kegiatan = $this->db->get_where('tbl_kegiatan', ['ID_KEGIATAN' => $id])->row();
+        $nama_kegiatan = ($kegiatan) ? $kegiatan->NAMA : "ID: " . $id;
+
         $ok = $this->M_admin->delete_kegiatan($id);
         if ($ok) {
+            // CATAT LOG: Tipe 'DELETE'
+            log_activity('DELETE', "Menghapus kegiatan: " . $nama_kegiatan);
+            
             $this->session->set_flashdata('success', 'Kegiatan berhasil dihapus.');
         } else {
             $this->session->set_flashdata('error', 'Gagal menghapus kegiatan.');

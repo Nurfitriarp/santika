@@ -59,15 +59,17 @@
                                 <input type="text" name="JAM_PELAJARAN" class="form-control" value="<?= $kegiatan->JAM_PELAJARAN ?>">
                             </div>
                         </div>
+                        
 
                         <hr>
+                        <a href="<?= base_url('admin/kegiatan') ?>" class="btn btn-secondary shadow-sm">Batal</a>
                         <button type="submit" class="btn btn-warning font-weight-bold shadow-sm">
                             <i class="fas fa-save fa-sm"></i> Simpan Perubahan
                         </button>
-                        <a href="<?= base_url('admin/kegiatan') ?>" class="btn btn-secondary shadow-sm">Batal</a>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+                                    </div>

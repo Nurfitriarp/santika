@@ -90,18 +90,19 @@ class M_admin extends CI_Model {
      * @param int $user_id (opsional, jika null ambil semua)
      * @param int $limit jumlah record
      */
-    public function get_activity_logs($user_id = null, $limit = 10)
+    public function get_activity_logs($user_id = null, $limit = 5)
     {
-        $this->db->select('al.*, u.USERNAME, u.NAMA')
-                ->from('activity_logs al')
-                ->join('tbl_user u', 'u.ID = al.user_id', 'left');
+        // Tambahkan alias 'nama_user' untuk kolom u.NAMA
+        $this->db->select('al.*, u.USERNAME, u.NAMA as nama_user') 
+                 ->from('activity_logs al')
+                 ->join('tbl_user u', 'u.ID = al.user_id', 'left');
         
         if ($user_id) {
             $this->db->where('al.user_id', $user_id);
         }
         
         $this->db->order_by('al.created_at', 'DESC')
-                ->limit($limit);
+                 ->limit($limit);
         
         return $this->db->get()->result();
     }

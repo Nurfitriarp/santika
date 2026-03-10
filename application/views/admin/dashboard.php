@@ -13,7 +13,7 @@
                     </button>
 
                     <div class="d-none d-lg-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100">
-                        <h1 class="h5 mb-0 text-gray-800 font-weight-bold">My Profile</h1>
+                        <h1 class="h5 mb-0 text-gray-800 font-weight-bold">Profil Saya</h1>
                     </div>
                     
 
@@ -152,16 +152,55 @@
                         </div>
 
                         <!-- Activity Log Card -->
+                        
                         <div class="col-lg-12 mb-4">
                             <div class="card shadow">
                                 <div class="card-header py-3">
                                     <h6 class="m-0 font-weight-bold text-primary">Activity Log</h6>
                                 </div>
                                 <div class="card-body">
-        <div class="table-responsive">
-        </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th width="20%">Waktu</th>
+                                                    <th width="20%">User</th>
+                                                    <th width="60%">Aktivitas</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="log-content">
+                                                <?php if(!empty($logs)): ?>
+                                                    <?php foreach($logs as $log): ?>
+                                                    <tr>
+                                                        <td>
+                                                            <small class="text-muted">
+                                                                <i class="fas fa-clock mr-1"></i>
+                                                                <?= date('d M Y, H:i', strtotime($log->created_at)); ?>
+                                                            </small>
+                                                        </td>
+                                                        <td>
+                                                            <strong><?= isset($log->nama_user) ? $log->nama_user : (isset($log->NAMA) ? $log->NAMA : 'System'); ?></strong>
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge badge-<?= function_exists('get_badge_color') ? get_badge_color($log->activity_type) : 'secondary'; ?> mr-2">
+                                                                <?= strtoupper($log->activity_type); ?>
+                                                            </span>
+                                                            <span class="text-dark"><?= $log->description; ?></span>
+                                                        </td>
+                                                    </tr>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <tr>
+                                                        <td colspan="3" class="text-center text-muted">Belum ada riwayat aktivitas.</td>
+                                                    </tr>
+                                                <?php endif; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
                 <!-- /.container-fluid -->
@@ -171,38 +210,25 @@
 
         <!-- End of Main Content -->
 
+       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
-            // Auto dismiss alert setelah 3 detik
-            document.addEventListener('DOMContentLoaded', function() {
-                const alerts = document.querySelectorAll('.alert:not(.alert-warning)');
-                alerts.forEach(function(alert) {
-                    setTimeout(function() {
-                        alert.style.transition = 'opacity 0.5s ease-out';
-                        alert.style.opacity = '0';
-                        setTimeout(function() {
-                            alert.remove();
-                        }, 500);
-                    }, 3000);
+            function loadLogs() {
+                $.ajax({
+                    // URL diarahkan ke controller admin sesuai permintaan Anda
+                    url: "<?= base_url('admin/get_latest_logs_ajax'); ?>", 
+                    type: "GET",
+                    success: function(data) {
+                        // Mengganti isi tbody dengan id log-content secara real-time
+                        $('#log-content').html(data);
+                    },
+                    error: function() {
+                        console.log("Gagal memuat log otomatis.");
+                    }
                 });
+            }
+
+            // Jalankan setiap 3 detik
+            $(document).ready(function() {
+                setInterval(loadLogs, 3000); 
             });
         </script>
-
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    function loadLogs() {
-        $.ajax({
-            url: "<?= base_url('admin/get_latest_logs_ajax'); ?>", // Pastikan path benar
-            type: "GET",
-            success: function(data) {
-                // Mengganti isi tbody dengan id log-content
-                $('#log-content').html(data);
-            },
-            error: function() {
-                console.log("Gagal memuat log otomatis.");
-            }
-        });
-    }
-
-    // Jalankan setiap 3 detik
-    setInterval(loadLogs, 3000); 
-</script>
