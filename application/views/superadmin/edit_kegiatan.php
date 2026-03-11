@@ -42,7 +42,7 @@
                             <div class="form-group col-md-4">
                                 <label>OPD</label>
                                 <select name="ID_OPD" class="form-control">
-                                    <option value="">-- Pilih OPD --</option>
+                                    <option value="">-- Pilih Perangkat Daerah --</option>
                                     <?php foreach ($opd as $o): ?>
                                         <option value="<?= $o->ID_OPD ?>" <?= ($o->ID_OPD == $kegiatan->ID_OPD) ? 'selected' : '' ?>>
                                             <?= $o->NAMA_OPD ?>

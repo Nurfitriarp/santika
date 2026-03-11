@@ -157,7 +157,7 @@
                         <?php else: ?>
                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                                 <i class="fas fa-info-circle"></i> <strong>Tidak Ada Data</strong><br>
-                                Belum ada jenis perangkat daerah. Silakan <a href="<?= base_url('superadmin/tambahpd'); ?>">tambah jenis perangkat daerah baru</a>.
+                                Belum ada jenis perangkat daerah. Silakan <a href="<?= base_url('superadmin/tambahjenispd'); ?>">tambah jenis perangkat daerah baru</a>.
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>

@@ -509,7 +509,7 @@ public function detail($id)
 
         $this->load->view('superadmin/header');
         $this->load->view('superadmin/sidebar', $data);
-        $this->load->view('superadmin/tambah_jenispd', $data); // Pastikan view ini tersedia
+        $this->load->view('superadmin/tambahjenispd', $data); // Pastikan view ini tersedia
         $this->load->view('superadmin/footer');
     }
 

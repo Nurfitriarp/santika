@@ -45,9 +45,9 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-4">
-                        <label>OPD</label>
+                        <label>Perangkat Daerah</label>
                         <select name="ID_OPD" class="form-control">
-                            <option value="">-- Pilih OPD --</option>
+                            <option value="">-- Pilih Perangkat Daerah --</option>
                             <?php if (!empty($opd)): ?>
                                 <?php foreach ($opd as $o): ?>
                                     <option value="<?= $o->ID_OPD ?>"><?= $o->NAMA_OPD ?></option>
