@@ -17,7 +17,7 @@ class Presensi extends CI_Controller {
             die("Link Presensi Tidak Valid.");
         }
 
-        // 2. Cari data peserta terakhir jika ada identifier (No HP atau Email)
+        // 2. Cari data peserta terakhir jika ada identifier
         $peserta_lama = null;
         if (!empty($identifier)) {
             $peserta_lama = $this->db->order_by('ID_LOGIN', 'DESC')
@@ -27,33 +27,60 @@ class Presensi extends CI_Controller {
 
         $data['kegiatan'] = $kegiatan;
         $data['opd'] = $this->db->get('tbl_opd')->result();
-        $data['lama'] = $peserta_lama; // Kirim data lama ke view
+        // --- AMBIL DATA KATEGORI UNTUK DROPDOWN ---
+        $data['jenis_opd'] = $this->db->get('tbl_jenis_opd')->result(); 
+        // ------------------------------------------
+        $data['lama'] = $peserta_lama;
 
         $this->load->view('publik/form_presensi', $data);
     }
 
     public function kirim() {
-        $input = $this->input->post();
-        
-        $data_hadir = [
-            'ID_KEGIATAN' => $input['ID_KEGIATAN'],
-            'NAMA'        => $input['NAMA'],
-            'JEN_KEL'     => $input['JEN_KEL'],
-            'NO_HP'       => $input['NO_HP'],
-            'EMAIL'       => $input['EMAIL'],
-            'ID_OPD'      => $input['ID_OPD'],
-            'JABATAN'     => $input['JABATAN'],
-            'TTD'         => $input['TTD']
-        ];
+    $input = $this->input->post();
+    
+    $data_hadir = [
+        'ID_KEGIATAN' => $input['ID_KEGIATAN'],
+        'NAMA'        => $input['NAMA'],
+        'JEN_KEL'     => $input['JEN_KEL'],
+        'NO_HP'       => $input['NO_HP'],
+        'EMAIL'       => $input['EMAIL'],
+        'ID_OPD'      => $input['ID_OPD'], // Langsung ambil nilainya
+        'JABATAN'     => $input['JABATAN'],
+        'TTD'         => $input['TTD']
+    ];
 
-        if($this->db->insert('tbl_presensi', $data_hadir)) {
-            $this->session->set_flashdata('sukses_presensi', 'Terima kasih, data kehadiran Anda telah kami simpan.');
-            redirect('presensi/sukses');
-        }
+    if($this->db->insert('tbl_presensi', $data_hadir)) {
+        $this->session->set_flashdata('sukses_presensi', 'Terima kasih, data kehadiran Anda telah kami simpan.');
+        redirect('presensi/sukses');
     }
+}
+
+    public function get_peserta_by_nama() {
+    // 1. Ambil input term
+    $term = $this->input->get('term', TRUE);
+    
+    if (empty($term)) {
+        echo json_encode([]);
+        return;
+    }
+
+    // 2. Kueri manual untuk memastikan kolom KAPITAL terbaca
+    $sql = "SELECT NAMA, JEN_KEL, NO_HP, EMAIL, JABATAN 
+            FROM tbl_presensi 
+            WHERE NAMA LIKE ? 
+            GROUP BY NAMA 
+            LIMIT 10";
+    
+    $query = $this->db->query($sql, array('%' . $term . '%'));
+
+    // 3. Kirim hasil sebagai JSON murni
+    $this->output
+         ->set_content_type('application/json')
+         ->set_output(json_encode($query->result_array()));
+}
 
     public function sukses() {
         $this->load->view('publik/sukses_presensi');
     }
 
-} // <-- Ini adalah penutup CLASS, harus berada di paling bawah file
+}
