@@ -117,7 +117,7 @@
                                     <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Nama Kegiatan</th>
+                                        <th class="text-center">Nama Kegiatan</th>
                                         <th>Tanggal</th>
                                         <th>Tempat</th>
                                         <th>Pemimpin Rapat</th>

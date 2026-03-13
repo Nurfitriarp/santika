@@ -89,23 +89,56 @@ class Superadmin extends MY_Controller {
         $this->load->view('superadmin/footer');
     }
 
-    public function simpan()
-    {
-        $input = $this->input->post();
-        $input['qr_token'] = bin2hex(random_bytes(10));
-        
-        $insert_id = $this->M_admin->insert_kegiatan($input);
+        // Contoh logika di Controller
+        public function simpan() {
+    // 1. Ambil input
+    $nama_kegiatan = $this->input->post('NAMA');
+    $pilihan_opd   = $this->input->post('ID_OPD'); // Ini array dari Select2
 
-        if ($insert_id) {
-            // CATAT LOG
-            log_activity('ADD', 'Menambahkan kegiatan baru: ' . $input['NAMA']);
-            $this->session->set_flashdata('success', 'Kegiatan berhasil ditambahkan.');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menambahkan kegiatan.');
-        }
-        redirect('superadmin/kegiatan');
+    // 2. Validasi awal agar tidak error saat foreach
+    if (empty($pilihan_opd)) {
+        $this->session->set_flashdata('error', 'Silakan pilih minimal satu Perangkat Daerah.');
+        redirect('superadmin/tambah');
+        return;
     }
 
+    $final_ids = [];
+    foreach ($pilihan_opd as $id) {
+        // Cek jika ID mengandung kata 'JENIS_', kita bersihkan
+        // sehingga hanya tersimpan ID murni (angka) ke database
+        if (strpos($id, 'JENIS_') === false) {
+            $final_ids[] = $id;
+        }
+    }
+
+    // Hapus duplikat ID jika ada
+    $final_ids = array_unique($final_ids);
+
+    // 3. Siapkan data untuk tbl_kegiatan
+    // Note: Karena ID_OPD di database biasanya berupa string/text untuk menampung banyak ID, 
+    // kita gabungkan dengan koma (implode)
+    $data = [
+        'NAMA'               => $nama_kegiatan,
+        'TEMPAT'             => $this->input->post('TEMPAT'),
+        'JAM'                => $this->input->post('JAM'),
+        'TANGGAL'            => $this->input->post('TANGGAL'),
+        'SKPD_PENYELENGGARA' => $this->input->post('SKPD_PENYELENGGARA'),
+        'PIMPINAN_RAPAT'     => $this->input->post('PIMPINAN_RAPAT'),
+        'ID_OPD'             => implode(',', $final_ids), // Simpan sebagai "1,2,3"
+        'JML_PESERTA'        => $this->input->post('JML_PESERTA'),
+    ];
+
+    // 4. Proses Simpan
+    if ($this->db->insert('tbl_kegiatan', $data)) {
+        log_activity('ADD', 'Menambahkan kegiatan baru: ' . $nama_kegiatan);
+        $this->session->set_flashdata('success', 'Kegiatan berhasil disimpan.');
+    } else {
+        $this->session->set_flashdata('error', 'Gagal menyimpan kegiatan.');
+    }
+
+    // 5. WAJIB: Redirect kembali ke halaman daftar kegiatan
+    redirect('superadmin/kegiatan');
+}
     public function update()
     {
         $id = $this->input->post('ID_KEGIATAN');
@@ -175,17 +208,20 @@ class Superadmin extends MY_Controller {
 
     public function tambah()
     {
-    $admin_id = $this->session->userdata('admin_id');
-    $data['admin'] = $this->db
-        ->select("*, PERANGKAT_DAERAH")
-        ->get_where('tbl_user', ['ID' => $admin_id])
-        ->row();
-    $data['opd'] = $this->M_admin->get_opd();
+        $admin_id = $this->session->userdata('admin_id');
+        $data['admin'] = $this->db
+            ->select("*, PERANGKAT_DAERAH")
+            ->get_where('tbl_user', ['ID' => $admin_id])
+            ->row();
 
-    $this->load->view('superadmin/header');
-    $this->load->view('superadmin/sidebar');
-    $this->load->view('superadmin/tambah_kegiatan', $data);
-    $this->load->view('superadmin/footer');
+        // TAMBAHKAN DUA BARIS INI:
+        $data['opd'] = $this->M_admin->get_opd();
+        $data['jenis_opd'] = $this->db->get('tbl_jenis_opd')->result(); // Ambil master jenis
+
+        $this->load->view('superadmin/header');
+        $this->load->view('superadmin/sidebar');
+        $this->load->view('superadmin/tambah_kegiatan', $data);
+        $this->load->view('superadmin/footer');
     }
 
     public function detail($id)

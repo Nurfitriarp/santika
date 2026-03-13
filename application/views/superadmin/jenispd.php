@@ -122,7 +122,7 @@
                             <thead>
                             <tr>
                                 <th class="text-center" width="70">No</th>
-                                <th>Nama Jenis Perangkat Daerah</th>
+                                <th class="text-center">Nama Jenis Perangkat Daerah</th>
                                 <th class="text-center" width="auto">Aksi</th>
                             </tr>
                             </thead>

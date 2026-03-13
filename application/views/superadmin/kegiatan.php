@@ -115,12 +115,12 @@
                         </div>
                     <?php endif; ?>
                     <?php if(!empty($kegiatan)): ?>
-                    <div class="table-responsive">
+                    <div class="table-responsive ">
                         <table class="table table-bordered table-hover" width="100%" cellspacing="0">
                             <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Nama Kegiatan</th>
+                                <th class="text-center">Nama Kegiatan</th>
                                 <th>Tanggal</th>
                                 <th>Tempat</th>
                                 <th>Pemimpin Rapat</th>
