@@ -54,10 +54,6 @@
                                 <label>Jumlah Peserta</label>
                                 <input type="number" name="JML_PESERTA" class="form-control" value="<?= $kegiatan->JML_PESERTA ?>">
                             </div>
-                            <div class="form-group col-md-4">
-                                <label>Jam Pelajaran</label>
-                                <input type="text" name="JAM_PELAJARAN" class="form-control" value="<?= $kegiatan->JAM_PELAJARAN ?>">
-                            </div>
                         </div>
                         
 

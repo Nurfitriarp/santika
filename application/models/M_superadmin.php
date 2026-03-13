@@ -48,17 +48,17 @@ class M_superadmin extends CI_Model {
     public function insert_kegiatan($data)
     {
         $insert = [
-            'NAMA' => isset($data['NAMA']) ? $data['NAMA'] : null,
-            'TEMPAT' => isset($data['TEMPAT']) ? $data['TEMPAT'] : null,
-            'JAM' => isset($data['JAM']) ? $data['JAM'] : null,
-            'TANGGAL' => isset($data['TANGGAL']) ? $data['TANGGAL'] : null,
+            'NAMA'               => isset($data['NAMA']) ? $data['NAMA'] : null,
+            'TEMPAT'             => isset($data['TEMPAT']) ? $data['TEMPAT'] : null,
+            'JAM'                => isset($data['JAM']) ? $data['JAM'] : null,
+            'TANGGAL'            => isset($data['TANGGAL']) ? $data['TANGGAL'] : null,
             'SKPD_PENYELENGGARA' => isset($data['SKPD_PENYELENGGARA']) ? $data['SKPD_PENYELENGGARA'] : null,
-            'PIMPINAN_RAPAT' => isset($data['PIMPINAN_RAPAT']) ? $data['PIMPINAN_RAPAT'] : null,
-            'ID_OPD' => isset($data['ID_OPD']) ? $data['ID_OPD'] : 0,
-            'JML_PESERTA' => isset($data['JML_PESERTA']) ? $data['JML_PESERTA'] : 0,
-            'STS' => isset($data['STS']) ? $data['STS'] : 0,
-            'SERTIFIKAT' => isset($data['SERTIFIKAT']) ? $data['SERTIFIKAT'] : 0,
-            'qr_token'      => isset($data['qr_token']) ? $data['qr_token'] : null, // QR TOKEN
+            'PIMPINAN_RAPAT'     => isset($data['PIMPINAN_RAPAT']) ? $data['PIMPINAN_RAPAT'] : null,
+            'ID_OPD'             => isset($data['ID_OPD']) ? $data['ID_OPD'] : 0,
+            'JML_PESERTA'        => isset($data['JML_PESERTA']) ? $data['JML_PESERTA'] : 0,
+            'STS'                => isset($data['STS']) ? $data['STS'] : 0,
+            'SERTIFIKAT'         => isset($data['SERTIFIKAT']) ? $data['SERTIFIKAT'] : 0,
+            'qr_token'           => isset($data['qr_token']) ? $data['qr_token'] : null, 
         ];
         
         $ok = $this->db->insert('tbl_kegiatan', $insert);

@@ -258,7 +258,6 @@ class Admin extends MY_Controller {
             'PIMPINAN_RAPAT' => $this->input->post('PIMPINAN_RAPAT'),
             'ID_OPD' => $this->input->post('ID_OPD'),
             'JML_PESERTA' => $this->input->post('JML_PESERTA'),
-            'JAM_PELAJARAN' => $this->input->post('JAM_PELAJARAN'),
         ];
 
         $this->db->where('ID_KEGIATAN', $id);

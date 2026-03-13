@@ -3,10 +3,10 @@
 
     <!-- Main Content -->
     <div id="content">
-        
+
         <!-- Begin Page Content -->
         <div class="container-fluid">
-            <h4 class="mt-4 mb-4">Tambah Perangkat Daerah</h4>
+            <h4 class="mt-4 mb-4">Tambah Jenis Perangkat Daerah</h4>
 
     <?php $CI =& get_instance(); ?>
     <?php if ($CI->session->flashdata('success')): ?>
@@ -36,11 +36,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.getElementById('customFile').addEventListener('change', function(e) {
-        var fileName = e.target.files[0].name;
-        var label = e.target.nextElementSibling;
-        label.innerText = fileName;
-    });
-</script>

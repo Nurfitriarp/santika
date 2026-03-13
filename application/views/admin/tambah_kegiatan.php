@@ -59,10 +59,6 @@
                         <label>Jumlah Peserta</label>
                         <input type="number" name="JML_PESERTA" class="form-control">
                     </div>
-                    <div class="form-group col-md-4">
-                        <label>Jam Pelajaran</label>
-                        <input type="text" name="JAM_PELAJARAN" class="form-control">
-                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Simpan</button>

@@ -45,9 +45,9 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-4">
-                        <label>Perangkat Daerah</label>
+                        <label>OPD</label>
                         <select name="ID_OPD" class="form-control">
-                            <option value="">-- Pilih Perangkat Daerah --</option>
+                            <option value="">-- Pilih OPD --</option>
                             <?php if (!empty($opd)): ?>
                                 <?php foreach ($opd as $o): ?>
                                     <option value="<?= $o->ID_OPD ?>"><?= $o->NAMA_OPD ?></option>
@@ -59,10 +59,10 @@
                         <label>Jumlah Peserta</label>
                         <input type="number" name="JML_PESERTA" class="form-control">
                     </div>
-                    <div>
-                        <a href="<?= base_url('superadmin/kegiatan') ?>" class="btn btn-secondary">Batal</a>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Simpan</button>
+                <a href="<?= base_url('superadmin/kegiatan') ?>" class="btn btn-secondary">Batal</a>
             </form>
         </div>
     </div>

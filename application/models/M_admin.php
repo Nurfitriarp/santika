@@ -58,7 +58,6 @@ class M_admin extends CI_Model {
             'JML_PESERTA' => isset($data['JML_PESERTA']) ? $data['JML_PESERTA'] : 0,
             'STS' => isset($data['STS']) ? $data['STS'] : 0,
             'SERTIFIKAT' => isset($data['SERTIFIKAT']) ? $data['SERTIFIKAT'] : 0,
-            'JAM_PELAJARAN' => isset($data['JAM_PELAJARAN']) ? $data['JAM_PELAJARAN'] : null,
             'qr_token'      => isset($data['qr_token']) ? $data['qr_token'] : null, // QR TOKEN
         ];
         
