@@ -29,7 +29,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Penyelenggara (SKPD)</label>
+                            <label>Penyelenggara</label>
                             <input type="text" name="SKPD_PENYELENGGARA" class="form-control" value="<?= $kegiatan->SKPD_PENYELENGGARA ?>">
                         </div>
 
@@ -40,7 +40,7 @@
 
                         <div class="form-row">
                             <div class="form-group col-md-4">
-                                <label>OPD</label>
+                                <label>Perangkat Daerah</label>
                                 <select name="ID_OPD" class="form-control">
                                     <option value="">-- Pilih OPD --</option>
                                     <?php foreach ($opd as $o): ?>

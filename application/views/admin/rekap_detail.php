@@ -52,7 +52,7 @@
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label class="font-weight-bold">SKPD Penyelenggara:</label>
+                                    <label class="font-weight-bold">PD Penyelenggara:</label>
                                     <p><?= $detail->SKPD_PENYELENGGARA ?? 'N/A' ?></p>
                                 </div>
                                 <div class="col-md-6">

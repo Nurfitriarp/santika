@@ -29,7 +29,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Penyelenggara (SKPD)</label>
+                            <label>Penyelenggara Kegiatan</label>
                             <input type="text" name="SKPD_PENYELENGGARA" class="form-control" value="<?= $kegiatan->SKPD_PENYELENGGARA ?>">
                         </div>
 
@@ -40,7 +40,7 @@
 
                         <div class="form-row">
                             <div class="form-group col-md-4">
-                                <label>OPD</label>
+                                <label>Perangkat Daerah</label>
                                 <select name="ID_OPD" class="form-control">
                                     <option value="">-- Pilih Perangkat Daerah --</option>
                                     <?php foreach ($opd as $o): ?>
@@ -57,10 +57,10 @@
                         </div>
 
                         <hr>
+                        <a href="<?= base_url('superadmin/kegiatan') ?>" class="btn btn-secondary shadow-sm">Batal</a>
                         <button type="submit" class="btn btn-warning font-weight-bold shadow-sm">
                             <i class="fas fa-save fa-sm"></i> Simpan Perubahan
                         </button>
-                        <a href="<?= base_url('superadmin/kegiatan') ?>" class="btn btn-secondary shadow-sm">Batal</a>
                     </form>
                 </div>
             </div>
