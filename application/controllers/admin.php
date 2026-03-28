@@ -220,23 +220,59 @@ class Admin extends MY_Controller {
     }
 
     // save kegiatan
-    public function simpan()
-    {
-        $input = $this->input->post();
-        $input['qr_token'] = bin2hex(random_bytes(10));
-        
-        $insert_id = $this->M_admin->insert_kegiatan($input);
+    public function simpan() {
+    $pilihan_opd = $this->input->post('ID_OPD'); // Tangkap array dari Select2
+    $jml_input   = $this->input->post('JML_PESERTA'); // Tangkap string "12,14,18"
 
-        if ($insert_id) {
-            // CATAT LOG: Menggunakan helper Anda
-            log_activity('ADD', "Menambahkan kegiatan baru: " . $input['NAMA']);
-            
-            $this->session->set_flashdata('success', 'Kegiatan berhasil ditambahkan.');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menambahkan kegiatan.');
-        }
-        redirect('admin/kegiatan');
+    if (empty($pilihan_opd)) {
+        $this->session->set_flashdata('error', 'Pilih minimal satu instansi.');
+        redirect('superadmin/tambah');
+        return;
     }
+
+    // 1. Bersihkan ID dari kategori kolektif [SEMUA]
+    $final_ids = [];
+    foreach ($pilihan_opd as $id) {
+        if (strpos($id, 'JENIS_') === false) {
+            $final_ids[] = $id;
+        }
+    }
+    $final_ids = array_unique($final_ids);
+
+    // 2. Pecah input jumlah peserta
+    $jml_array = explode(',', $jml_input);
+    $jml_array = array_map('trim', $jml_array); 
+
+    // 3. JODOHKAN ID dengan JUMLAHNYA
+    $data_gabungan = [];
+    $total_peserta = 0;
+    
+    foreach ($final_ids as $index => $id) {
+        // Ambil angka sesuai urutan, jika tidak ada set 0
+        $jml_orang = isset($jml_array[$index]) && is_numeric($jml_array[$index]) ? (int)$jml_array[$index] : 0;
+        
+        // Format: "ID:JUMLAH"
+        $data_gabungan[] = $id . ':' . $jml_orang;
+        $total_peserta += $jml_orang;
+    }
+
+    // 4. Masukkan ke Array Data
+    $data = [
+        'NAMA'               => $this->input->post('NAMA'),
+        'TEMPAT'             => $this->input->post('TEMPAT'),
+        'JAM'                => $this->input->post('JAM'),
+        'TANGGAL'            => $this->input->post('TANGGAL'),
+        'SKPD_PENYELENGGARA' => $this->input->post('SKPD_PENYELENGGARA'),
+        'PIMPINAN_RAPAT'     => $this->input->post('PIMPINAN_RAPAT'),
+        // INI BAGIAN TERPENTING: Simpan sebagai string dipisah koma
+        'ID_OPD'             => implode(',', $data_gabungan), 
+        'JML_PESERTA'        => $total_peserta,
+        'qr_token'           => md5(uniqid(rand(), true))
+    ];
+
+    $this->db->insert('tbl_kegiatan', $data);
+    redirect('admin/kegiatan');
+}
 
     // Fungsi untuk menampilkan halaman edit
     public function edit($id)
