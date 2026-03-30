@@ -167,7 +167,7 @@ class Superadmin extends MY_Controller {
             $this->session->set_flashdata('error', 'Gagal memperbarui kegiatan.');
         }
         redirect('superadmin/kegiatan');
-    }
+}
 
     public function edit($id)
 {

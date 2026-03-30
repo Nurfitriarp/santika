@@ -38,21 +38,61 @@
                             <input type="text" name="PIMPINAN_RAPAT" class="form-control" value="<?= $kegiatan->PIMPINAN_RAPAT ?>">
                         </div>
 
+                        <?php 
+                            // LOGIKA MEMCAH DATA ID_OPD (Format: 1:10,2:15)
+                            $saved_ids = [];
+                            $saved_jml = [];
+                            if(!empty($kegiatan->ID_OPD)){
+                                $pairs = explode(',', $kegiatan->ID_OPD);
+                                foreach($pairs as $p){
+                                    $part = explode(':', $p);
+                                    if(count($part) == 2){
+                                        $saved_ids[] = $part[0];
+                                        $saved_jml[] = $part[1];
+                                    } else {
+                                        // Antisipasi jika data lama masih format ID murni
+                                        $saved_ids[] = $p;
+                                        $saved_jml[] = 0;
+                                    }
+                                }
+                            }
+                            $string_jml = implode(',', $saved_jml);
+                        ?>
+
                         <div class="form-row">
-                            <div class="form-group col-md-4">
-                                <label>Perangkat Daerah</label>
-                                <select name="ID_OPD" class="form-control">
-                                    <option value="">-- Pilih OPD --</option>
-                                    <?php foreach ($opd as $o): ?>
-                                        <option value="<?= $o->ID_OPD ?>" <?= ($o->ID_OPD == $kegiatan->ID_OPD) ? 'selected' : '' ?>>
-                                            <?= $o->NAMA_OPD ?>
-                                        </option>
-                                    <?php endforeach; ?>
+                            <div class="form-group col-md-8">
+                                <label class="font-weight-bold text-primary">Perangkat Daerah / Jenis</label>
+                                <select class="form-control select2-multiple" name="ID_OPD[]" id="ID_OPD" multiple="multiple" style="width: 100%;" required>
+                                    
+                                    <optgroup label="PILIH BERDASARKAN JENIS (KOLEKTIF)">
+                                        <?php if(!empty($jenis_opd)): foreach ($jenis_opd as $j): ?>
+                                            <option value="JENIS_<?= $j->{'ID_J-OPD'} ?>" data-type="group">
+                                                [SEMUA] <?= $j->NAMA_OPD ?>
+                                            </option>
+                                        <?php endforeach; endif; ?>
+                                    </optgroup>
+
+                                    <optgroup label="PILIH PERANGKAT DAERAH (INDIVIDU)">
+                                        <?php if(!empty($opd)): foreach ($opd as $o): ?>
+                                            <option value="<?= $o->ID_OPD ?>" 
+                                                    data-jenis="JENIS_<?= $o->{'ID_OPD'} ?>" 
+                                                    data-type="individual"
+                                                    <?= in_array($o->ID_OPD, $saved_ids) ? 'selected' : '' ?>>
+                                                <?= $o->NAMA_OPD ?>
+                                            </option>
+                                        <?php endforeach; endif; ?>
+                                    </optgroup>
                                 </select>
+                                <div id="urutan-helper" class="mt-2 small text-muted">
+                                    Urutan Input: <span id="list-urutan" class="font-weight-bold text-dark"></span>
+                                </div>
                             </div>
+
                             <div class="form-group col-md-4">
-                                <label>Jumlah Peserta</label>
-                                <input type="number" name="JML_PESERTA" class="form-control" value="<?= $kegiatan->JML_PESERTA ?>">
+                                <label class="font-weight-bold text-dark">Jumlah Peserta (Pisahkan koma)</label>
+                                <input type="text" name="JML_PESERTA" id="jml_peserta_input" class="form-control" 
+                                    value="<?= $string_jml ?>" placeholder="Contoh: 12,14,18">
+                                <small class="text-danger" id="error-koma" style="display:none;">* Jumlah angka tidak sesuai!</small>
                             </div>
                         </div>
                         

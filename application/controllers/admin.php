@@ -197,7 +197,6 @@ class Admin extends MY_Controller {
     }
 
     // show tambah form
-    // show tambah form
     public function tambah()
     {
         // 1. Ambil ID dari session
@@ -211,6 +210,9 @@ class Admin extends MY_Controller {
 
         // 3. Ambil data OPD untuk isi dropdown
         $data['opd'] = $this->M_admin->get_opd();
+
+        // TAMBAHKAN BARIS INI
+        $data['jenis_opd'] = $this->db->get('tbl_jenis_opd')->result();
 
         $this->load->view('admin/header');
         $this->load->view('admin/sidebar');
@@ -226,7 +228,7 @@ class Admin extends MY_Controller {
 
     if (empty($pilihan_opd)) {
         $this->session->set_flashdata('error', 'Pilih minimal satu instansi.');
-        redirect('superadmin/tambah');
+        redirect('admin/tambah');
         return;
     }
 
@@ -274,29 +276,10 @@ class Admin extends MY_Controller {
     redirect('admin/kegiatan');
 }
 
-    // Fungsi untuk menampilkan halaman edit
-    public function edit($id)
-    {
-        $data['kegiatan'] = $this->db->get_where('tbl_kegiatan', ['ID_KEGIATAN' => $id])->row();
-        $data['opd'] = $this->M_admin->get_opd();
-
-        if (!$data['kegiatan']) {
-            $this->session->set_flashdata('error', 'Data kegiatan tidak ditemukan.');
-            redirect('admin/kegiatan');
-        }
-
-        $this->load->view('admin/header');
-        $this->load->view('admin/sidebar');
-        $this->load->view('admin/edit_kegiatan', $data);
-        $this->load->view('admin/footer');
-    }
-
-    // update data
     public function update()
     {
         $id = $this->input->post('ID_KEGIATAN');
-        $nama_kegiatan = $this->input->post('NAMA'); // Ambil nama untuk log
-        
+        $nama_kegiatan = $this->input->post('NAMA');
         $data = [
             'NAMA' => $nama_kegiatan,
             'TEMPAT' => $this->input->post('TEMPAT'),
@@ -310,15 +293,38 @@ class Admin extends MY_Controller {
 
         $this->db->where('ID_KEGIATAN', $id);
         if ($this->db->update('tbl_kegiatan', $data)) {
-            // CATAT LOG: Tipe 'EDIT'
-            log_activity('EDIT', "Memperbarui data kegiatan: " . $nama_kegiatan);
-            
+            // CATAT LOG
+            log_activity('EDIT', 'Memperbarui data kegiatan: ' . $nama_kegiatan);
             $this->session->set_flashdata('success', 'Kegiatan berhasil diperbarui.');
         } else {
             $this->session->set_flashdata('error', 'Gagal memperbarui kegiatan.');
         }
         redirect('admin/kegiatan');
+}
+
+    // Fungsi untuk menampilkan halaman edit
+    public function edit($id)
+{
+    $admin_id = $this->session->userdata('admin_id');
+    $data['admin'] = $this->db->get_where('tbl_user', ['ID' => $admin_id])->row();
+
+    // 1. Ambil data kegiatan
+    $data['kegiatan'] = $this->db->get_where('tbl_kegiatan', ['ID_KEGIATAN' => $id])->row();
+
+    // 2. Ambil data master (PASTIKAN INI ADA)
+    $data['opd'] = $this->M_admin->get_opd(); 
+    $data['jenis_opd'] = $this->db->get('tbl_jenis_opd')->result(); 
+
+    if (!$data['kegiatan']) {
+        $this->session->set_flashdata('error', 'Data tidak ditemukan.');
+        redirect('superadmin/kegiatan');
     }
+
+    $this->load->view('superadmin/header');
+    $this->load->view('superadmin/sidebar', $data);
+    $this->load->view('superadmin/edit_kegiatan', $data); 
+    $this->load->view('superadmin/footer');
+}
 
     // Hapus kegiatan
     public function hapus($id)
