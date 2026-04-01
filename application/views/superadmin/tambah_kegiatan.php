@@ -39,7 +39,7 @@
                             </div>
                             <div class="form-group col-md-3">
                                 <label class="font-weight-bold text-dark">Jam</label>
-                                <input type="text" name="JAM" class="form-control" placeholder="Contoh : 09.00 - 12.00">
+                                <input type="text" name="JAM" class="form-control" placeholder="Waktu pelaksanaan">
                             </div>
                             <div class="form-group col-md-3">
                                 <label class="font-weight-bold text-dark">Tanggal</label>
@@ -90,7 +90,7 @@
 
                         <div class="form-group col-md-4">
                             <label class="font-weight-bold text-dark">Jumlah Peserta (Pisahkan dengan koma)</label>
-                            <input type="text" name="JML_PESERTA" id="jml_peserta_input" class="form-control" placeholder="Contoh: 10,15,5">
+                            <input type="text" name="JML_PESERTA" id="jml_peserta_input" class="form-control" >
                             <small class="text-danger" id="error-koma" style="display:none;">* Jumlah angka harus sama dengan jumlah instansi!</small>
                         </div>
                     </div>

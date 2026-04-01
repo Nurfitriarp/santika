@@ -239,21 +239,27 @@
                     // Inisialisasi awal
                     $total_l = 0;
                     $total_p = 0;
+                    $total_seluruh = 0;
 
                     if (isset($peserta) && is_array($peserta)) {
+                        $total_seluruh = count($peserta); // Menghitung total semua baris peserta
                         foreach ($peserta as $p) {
-                            // Cek apakah JEN_KEL adalah 1 / 'L' (Laki-laki)
-                            if ($p->JEN_KEL == 1 || strtoupper($p->JEN_KEL) == 'L') {
+                            // Cek Laki-laki
+                            if ($p->JEN_KEL == 'L' || $p->JEN_KEL == 1) {
                                 $total_l++;
                             } 
-                            // Cek apakah JEN_KEL adalah 2 / 'P' (Perempuan)
-                            elseif ($p->JEN_KEL == 2 || strtoupper($p->JEN_KEL) == 'P') {
+                            // Cek Perempuan
+                            elseif ($p->JEN_KEL == 'P' || $p->JEN_KEL == 2) {
                                 $total_p++;
                             }
                         }
                     }
                 ?>
-                <?= $total_l ?> Laki-Laki (L) ; Perempuan (P) : <?= $total_p ?>
+                <strong><?= $total_seluruh ?> Orang</strong>
+                <br>
+                <span style="font-size: 12px; margin-left: 8px;">
+                    ( Laki-Laki (L): <?= $total_l ?> ; Perempuan (P): <?= $total_p ?> )
+                </span>
             </div>
         </div>
     </div>

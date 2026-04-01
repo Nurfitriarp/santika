@@ -91,27 +91,28 @@ class Superadmin extends MY_Controller {
 
         // Contoh logika di Controller
     public function simpan() {
-        $pilihan_input = $this->input->post('ID_OPD'); // Isinya array: ["JENIS_1", "24", "25"]
-        $jml_input     = $this->input->post('JML_PESERTA'); // Isinya string: "10,5,5"
+        $pilihan_opd = $this->input->post('ID_OPD'); // Isinya Array (Contoh: ["JENIS_1", "24", "25"])
+        $jml_input   = $this->input->post('JML_PESERTA'); // Isinya String (Contoh: "50,10,15")
 
-        if (empty($pilihan_input)) {
+        if (empty($pilihan_opd)) {
             $this->session->set_flashdata('error', 'Silakan pilih minimal satu instansi.');
             redirect('superadmin/tambah');
             return;
         }
 
-        // Pecah string jumlah peserta berdasarkan koma
+        // 1. Pecah input jumlah peserta (koma)
         $jml_array = explode(',', $jml_input);
         $jml_array = array_map('trim', $jml_array); 
 
+        // 2. Gabungkan ID/Jenis dengan Jumlah (Format: ID:JUMLAH)
         $data_gabungan = [];
         $total_peserta = 0;
         
-        foreach ($pilihan_input as $index => $val) {
-            // Ambil angka sesuai urutan, jika tidak ada atau bukan angka set 0
+        foreach ($pilihan_opd as $index => $val) {
+            // Ambil angka sesuai urutan, jika tidak ada set 0
             $jml_orang = (isset($jml_array[$index]) && is_numeric($jml_array[$index])) ? (int)$jml_array[$index] : 0;
             
-            // Simpan format "IDENTITAS:JUMLAH" (Contoh: JENIS_1:10 atau 24:5)
+            // Simpan format "IDENTITAS:JUMLAH"
             $data_gabungan[] = $val . ':' . $jml_orang;
             $total_peserta += $jml_orang;
         }
@@ -123,61 +124,74 @@ class Superadmin extends MY_Controller {
             'TANGGAL'            => $this->input->post('TANGGAL'),
             'SKPD_PENYELENGGARA' => $this->input->post('SKPD_PENYELENGGARA'),
             'PIMPINAN_RAPAT'     => $this->input->post('PIMPINAN_RAPAT'),
-            'ID_OPD'             => implode(',', $data_gabungan), // Hasil: JENIS_1:10,24:5,25:5
-            'JML_PESERTA'        => $total_peserta, // Total otomatis: 20
+            // TERSIMPAN SEPERTI: "JENIS_1:50,24:10,25:15"
+            'ID_OPD'             => implode(',', $data_gabungan), 
+            'JML_PESERTA'        => $total_peserta, // Hasil penjumlahan otomatis (Contoh: 75)
             'qr_token'           => md5(uniqid(rand(), true))
         ];
 
         if ($this->db->insert('tbl_kegiatan', $data)) {
             log_activity('ADD', 'Menambahkan kegiatan: ' . $data['NAMA']);
             $this->session->set_flashdata('success', 'Kegiatan berhasil disimpan.');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan data.');
         }
-
         redirect('superadmin/kegiatan');
     }
+    public function edit($id)
+    {
+        $admin_id = $this->session->userdata('admin_id');
+        $data['admin'] = $this->db->get_where('tbl_user', ['ID' => $admin_id])->row();
+
+        // Ambil data kegiatan
+        $data['kegiatan'] = $this->db->get_where('tbl_kegiatan', ['ID_KEGIATAN' => $id])->row();
+        
+        // WAJIB: Memuat master data agar dropdown Jenis/Kolektif muncul
+        $data['opd'] = $this->M_admin->get_opd(); 
+        $data['jenis_opd'] = $this->db->get('tbl_jenis_opd')->result(); 
+
+        if (!$data['kegiatan']) {
+            $this->session->set_flashdata('error', 'Data tidak ditemukan.');
+            redirect('superadmin/kegiatan');
+        }
+
+        $this->load->view('superadmin/header');
+        $this->load->view('superadmin/sidebar', $data);
+        $this->load->view('superadmin/edit_kegiatan', $data); 
+        $this->load->view('superadmin/footer');
+    }
+
     public function update() {
         $id_kegiatan = $this->input->post('ID_KEGIATAN');
-        $pilihan_opd = $this->input->post('ID_OPD'); // Ini berbentuk Array
-        $jml_input   = $this->input->post('JML_PESERTA'); // Ini berbentuk String "10,20"
+        $pilihan_input = $this->input->post('ID_OPD'); // Isinya Array
+        $jml_input     = $this->input->post('JML_PESERTA'); // Isinya String koma
 
-        if (empty($pilihan_opd)) {
+        if (empty($pilihan_input)) {
             $this->session->set_flashdata('error', 'Minimal satu instansi harus dipilih.');
             redirect($_SERVER['HTTP_REFERER']);
             return;
         }
 
-        // 1. Bersihkan ID (Hapus yang kategori [SEMUA]/JENIS_)
-        $final_ids = [];
-        foreach ($pilihan_opd as $id) {
-            if (strpos($id, 'JENIS_') === false) {
-                $final_ids[] = $id;
-            }
-        }
-        $final_ids = array_unique($final_ids);
-
-        // 2. Pecah String Jumlah dari input koma
+        // 1. Pecah string jumlah peserta (koma)
         $jml_array = explode(',', $jml_input);
         $jml_array = array_map('trim', $jml_array);
 
-        // 3. Gabungkan kembali menjadi format ID:JML agar bisa disimpan sebagai String
+        // 2. Gabungkan pilihan (Jenis/OPD) dengan Jumlahnya
         $data_gabungan = [];
         $total_peserta = 0;
-        foreach ($final_ids as $index => $id) {
-            $jml_orang = isset($jml_array[$index]) && is_numeric($jml_array[$index]) ? (int)$jml_array[$index] : 0;
-            $data_gabungan[] = $id . ':' . $jml_orang;
+        
+        foreach ($pilihan_input as $index => $val) {
+            $jml_orang = (isset($jml_array[$index]) && is_numeric($jml_array[$index])) ? (int)$jml_array[$index] : 0;
+            $data_gabungan[] = $val . ':' . $jml_orang;
             $total_peserta += $jml_orang;
         }
 
-        // 4. Siapkan data untuk Update
         $data = [
             'NAMA'               => $this->input->post('NAMA'),
             'TEMPAT'             => $this->input->post('TEMPAT'),
             'JAM'                => $this->input->post('JAM'),
             'TANGGAL'            => $this->input->post('TANGGAL'),
             'PIMPINAN_RAPAT'     => $this->input->post('PIMPINAN_RAPAT'),
-            // KONVERSI ARRAY KE STRING DI SINI:
+            'SKPD_PENYELENGGARA' => $this->input->post('SKPD_PENYELENGGARA'),
+            // TERSIMPAN SEBAGAI STRING: "JENIS_1:50,24:10"
             'ID_OPD'             => implode(',', $data_gabungan), 
             'JML_PESERTA'        => $total_peserta,
         ];
@@ -186,35 +200,9 @@ class Superadmin extends MY_Controller {
         if ($this->db->update('tbl_kegiatan', $data)) {
             log_activity('EDIT', 'Memperbarui kegiatan: ' . $data['NAMA']);
             $this->session->set_flashdata('success', 'Perubahan berhasil disimpan.');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal memperbarui data.');
         }
-        
         redirect('superadmin/kegiatan');
     }
-
-    public function edit($id)
-{
-    $admin_id = $this->session->userdata('admin_id');
-    $data['admin'] = $this->db->get_where('tbl_user', ['ID' => $admin_id])->row();
-
-    // 1. Ambil data kegiatan
-    $data['kegiatan'] = $this->db->get_where('tbl_kegiatan', ['ID_KEGIATAN' => $id])->row();
-
-    // 2. Ambil data master (PASTIKAN INI ADA)
-    $data['opd'] = $this->M_admin->get_opd(); 
-    $data['jenis_opd'] = $this->db->get('tbl_jenis_opd')->result(); 
-
-    if (!$data['kegiatan']) {
-        $this->session->set_flashdata('error', 'Data tidak ditemukan.');
-        redirect('superadmin/kegiatan');
-    }
-
-    $this->load->view('superadmin/header');
-    $this->load->view('superadmin/sidebar', $data);
-    $this->load->view('superadmin/edit_kegiatan', $data); 
-    $this->load->view('superadmin/footer');
-}
 
     public function hapus($id)
     {
@@ -232,6 +220,20 @@ class Superadmin extends MY_Controller {
         }
         redirect('superadmin/kegiatan');
     }
+
+    public function toggle_status($id, $status) {
+    $this->db->where('ID_KEGIATAN', $id);
+    $update = $this->db->update('tbl_kegiatan', ['STS' => $status]);
+
+    if ($update) {
+        $msg = ($status == 1) ? "Absensi diaktifkan." : "Absensi dinonaktifkan.";
+        $this->session->set_flashdata('success', $msg);
+        log_activity('EDIT', $msg . " ID: " . $id);
+    } else {
+        $this->session->set_flashdata('error', "Gagal mengubah status.");
+    }
+    redirect('superadmin/kegiatan');
+}
 
     public function tambah()
     {

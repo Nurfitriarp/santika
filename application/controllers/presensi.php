@@ -12,12 +12,24 @@ class Presensi extends CI_Controller {
 
     public function isi($token, $identifier = '') {
         $kegiatan = $this->db->get_where('tbl_kegiatan', ['qr_token' => $token])->row();
+        
         if (!$kegiatan) {
-            show_error("Link Presensi Tidak Valid atau Telah Kedaluwarsa.", 404, "Akses Ditolak");
+            show_error("Link Presensi Tidak Valid.", 404);
         }
+
+        // CEK STATUS AKTIF/NONAKTIF
+        if ($kegiatan->STS == 0) {
+            // Tampilkan pesan bahwa absensi sudah ditutup
+            $data['judul'] = "Absensi Ditutup";
+            $data['pesan'] = "Maaf, pengisian daftar hadir untuk kegiatan <b>".$kegiatan->NAMA."</b> telah dinonaktifkan oleh admin.";
+            $this->load->view('publik/absensi_tutup', $data); // Buat file view baru ini
+            return;
+        }
+
         $data['kegiatan']  = $kegiatan;
-        $data['opd']       = $this->db->get('tbl_opd')->result();
+        $data['opd']       = $this->db->get('tbl_opd')->result_array(); 
         $data['jenis_opd'] = $this->db->get('tbl_jenis_opd')->result(); 
+        
         $this->load->view('publik/form_presensi', $data);
     }
 

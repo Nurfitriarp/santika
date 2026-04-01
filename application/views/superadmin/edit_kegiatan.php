@@ -18,13 +18,13 @@
                                 <label>Tempat</label>
                                 <input type="text" name="TEMPAT" class="form-control" value="<?= $kegiatan->TEMPAT ?>">
                             </div>
+                                <div class="form-group col-md-3">
+                                <label>Jam</label>
+                                <input type="text" name="JAM" class="form-control" value="<?= $kegiatan->JAM ?>">
+                            </div>
                             <div class="form-group col-md-3">
                                 <label>Tanggal</label>
                                 <input type="date" name="TANGGAL" class="form-control" value="<?= $kegiatan->TANGGAL ?>">
-                            </div>
-                            <div class="form-group col-md-3">
-                                <label>Jam</label>
-                                <input type="text" name="JAM" class="form-control" value="<?= $kegiatan->JAM ?>">
                             </div>
                         </div>
 
@@ -39,34 +39,40 @@
                         </div>
 
                         <?php 
-                            // LOGIKA MEMCAH DATA ID_OPD (Format: 1:10,2:15)
-                            $saved_ids = [];
-                            $saved_jml = [];
+                            // Inisialisasi array untuk menampung data lama
+                            $saved_values = []; // Untuk menampung ID (misal: "JENIS_1", "24")
+                            $saved_jml    = []; // Untuk menampung Jumlah (misal: "50", "10")
+
+                            // 1. Cek apakah data ID_OPD dari database tidak kosong
                             if(!empty($kegiatan->ID_OPD)){
+                                // Pecah string berdasarkan koma (hasil: ["JENIS_1:50", "24:10"])
                                 $pairs = explode(',', $kegiatan->ID_OPD);
+                                
                                 foreach($pairs as $p){
+                                    // Pecah lagi berdasarkan titik dua (hasil: ["JENIS_1", "50"])
                                     $part = explode(':', $p);
+                                    
+                                    // Pastikan formatnya valid (ada ID dan ada Jumlah)
                                     if(count($part) == 2){
-                                        $saved_ids[] = $part[0];
-                                        $saved_jml[] = $part[1];
-                                    } else {
-                                        // Antisipasi jika data lama masih format ID murni
-                                        $saved_ids[] = $p;
-                                        $saved_jml[] = 0;
+                                        $saved_values[] = $part[0]; // Simpan ID/Identitas
+                                        $saved_jml[]    = $part[1]; // Simpan Jumlahnya
                                     }
                                 }
                             }
-                            $string_jml = implode(',', $saved_jml);
+
+                            // 2. Gabungkan kembali array jumlah menjadi string koma untuk isi input teks
+                            $string_jml = implode(',', $saved_jml); // Hasil: "50,10"
                         ?>
 
                         <div class="form-row">
                             <div class="form-group col-md-8">
-                                <label class="font-weight-bold text-primary">Perangkat Daerah / Jenis</label>
+                                <label class="font-weight-bold text-primary">Perangkat Daerah / Jenis (Kolektif)</label>
                                 <select class="form-control select2-multiple" name="ID_OPD[]" id="ID_OPD" multiple="multiple" style="width: 100%;" required>
                                     
                                     <optgroup label="PILIH BERDASARKAN JENIS (KOLEKTIF)">
                                         <?php if(!empty($jenis_opd)): foreach ($jenis_opd as $j): ?>
-                                            <option value="JENIS_<?= $j->{'ID_J-OPD'} ?>" data-type="group">
+                                            <option value="JENIS_<?= $j->{'ID_J-OPD'} ?>" data-type="group"
+                                                <?= in_array("JENIS_".$j->{'ID_J-OPD'}, $saved_values) ? 'selected' : '' ?>>
                                                 [SEMUA] <?= $j->NAMA_OPD ?>
                                             </option>
                                         <?php endforeach; endif; ?>
@@ -77,15 +83,12 @@
                                             <option value="<?= $o->ID_OPD ?>" 
                                                     data-jenis="JENIS_<?= $o->{'ID_OPD'} ?>" 
                                                     data-type="individual"
-                                                    <?= in_array($o->ID_OPD, $saved_ids) ? 'selected' : '' ?>>
+                                                    <?= in_array($o->ID_OPD, $saved_values) ? 'selected' : '' ?>>
                                                 <?= $o->NAMA_OPD ?>
                                             </option>
                                         <?php endforeach; endif; ?>
                                     </optgroup>
                                 </select>
-                                <!-- <div id="urutan-helper" class="mt-2 small text-muted">  -->
-                                    <!-- Urutan Input: <span id="list-urutan" class="font-weight-bold text-dark"></span> -->
-                                <!-- </div> -->
                             </div>
 
                             <div class="form-group col-md-4">
@@ -96,61 +99,48 @@
                             </div>
                         </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 <script>
 $(document).ready(function() {
-    // Inisialisasi Select2
     var $select = $('#ID_OPD').select2({
         placeholder: " Pilih instansi...",
         allowClear: true,
         width: '100%'
     });
 
-    // Fungsi Update Tampilan Urutan
     function updateHelper() {
         var selectedData = $select.select2('data');
         var names = [];
         selectedData.forEach(function(item) {
-            // Hanya ambil teks yang bukan grup kolektif
-            if (item.element && $(item.element).data('type') === 'individual') {
-                names.push(item.text);
-            }
+            names.push(item.text);
         });
         $('#list-urutan').text(names.length > 0 ? names.join(' → ') : '-');
     }
 
-    // Jalankan pertama kali saat load
-    updateHelper();
-
-    // Event ketika ada pilihan baru (Logika Kolektif)
-    $select.on('select2:select', function (e) {
-        var data = e.params.data;
-        var $element = $(data.element);
-        
-        if ($element.data('type') === 'group') {
-            var jenisId = data.id; 
-            var currentValues = $select.val() || [];
-
-            // Pilih semua individu yang jenisnya sama
-            $(`#ID_OPD option[data-type="individual"][data-jenis='${jenisId}']`).each(function() {
-                var val = $(this).val();
-                if (currentValues.indexOf(val) === -1) {
-                    currentValues.push(val);
-                }
-            });
-
-            // Hapus ID "JENIS_X" agar tidak tersimpan ke DB
-            currentValues = currentValues.filter(id => id !== jenisId);
-            
-            $select.val(currentValues).trigger('change');
-        }
-        updateHelper();
-    });
+    updateHelper(); // Jalankan saat load
 
     $select.on('change', function() {
         updateHelper();
+    });
+
+    // Logika Auto-Select Kolektif
+    $select.on('select2:select', function (e) {
+        var data = e.params.data;
+        var $el = $(data.element);
+        
+        if ($el.data('type') === 'group') {
+            var jenisId = data.id; 
+            var currentValues = $select.val() || [];
+
+            $(`#ID_OPD option[data-type="individual"][data-jenis='${jenisId}']`).each(function() {
+                if (currentValues.indexOf($(this).val()) === -1) {
+                    currentValues.push($(this).val());
+                }
+            });
+
+            // Hapus tag [SEMUA] agar tidak tersimpan sebagai ID tunggal
+            currentValues = currentValues.filter(id => id !== jenisId);
+            $select.val(currentValues).trigger('change');
+        }
     });
 });
 </script>
