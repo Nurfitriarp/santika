@@ -113,7 +113,20 @@
                                             <tr>
                                                 <td><?= $key + 1 ?></td>
                                                 <td><?= $p->NAMA ?? 'N/A' ?></td>
-                                                <td><?= $p->JEN_KEL == 1 ? 'Laki-laki' : 'Perempuan' ?></td>
+                                                <td>
+                                                    <?php 
+                                                        // Mengubah ke huruf besar untuk memastikan pengecekan akurat
+                                                        $jk = strtoupper($p->JEN_KEL);
+
+                                                        if ($jk == 'L' || $jk == '1') {
+                                                            echo 'Laki-laki';
+                                                        } elseif ($jk == 'P' || $jk == '2') {
+                                                            echo 'Perempuan';
+                                                        } else {
+                                                            echo '-'; // Jika data kosong
+                                                        }
+                                                    ?>
+                                                </td>
                                                 <td><?= $p->NO_HP ?? 'N/A' ?></td>
                                                 <td><?= $p->EMAIL ?? 'N/A' ?></td>
                                                 <td>

@@ -56,18 +56,19 @@
                             <option value="super_admin">Super Admin</option>
                         </select>
                     </div>
-                </div>
-                <div class="form-group col-md-6">
-                    <label class="font-weight-bold">Foto Profil</label>
-                    <div class="custom-file">
-                        <input type="file" name="gambar" class="custom-file-input" id="customFile" accept="image/*">
-                        <label class="custom-file-label" for="customFile">Pilih file foto...</label>
-                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="font-weight-bold">Foto Profil</label>
+                        <div class="custom-file">
+                            <input type="file" name="gambar" class="custom-file-input" id="customFile" accept="image/*">
+                            <label class="custom-file-label" for="customFile">Pilih file foto...</label>
+                        </div>
                         <small class="text-muted">Format: JPG, PNG, JPEG. Maks: 2MB.</small>
                     </div>
-
-                <button type="submit" class="btn btn-primary">Simpan</button>
-                <a href="<?= base_url('superadmin/kelola_user') ?>" class="btn btn-secondary">Batal</a>
+                </div> <hr>
+                <button type="submit" class="btn btn-primary shadow-sm">
+                    <i class="fas fa-save fa-sm"></i> Simpan User
+                </button>
+                <a href="<?= base_url('superadmin/kelola_user') ?>" class="btn btn-secondary shadow-sm">Batal</a>
             </form>
         </div>
     </div>

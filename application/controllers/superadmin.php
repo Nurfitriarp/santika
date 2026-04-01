@@ -206,34 +206,46 @@ class Superadmin extends MY_Controller {
 
     public function hapus($id)
     {
-        // Ambil nama kegiatan dulu untuk keterangan log
+        // 1. Ambil nama kegiatan dulu (untuk keperluan catatan Log)
         $kegiatan = $this->db->get_where('tbl_kegiatan', ['ID_KEGIATAN' => $id])->row();
         $nama = ($kegiatan) ? $kegiatan->NAMA : 'ID: '.$id;
 
-        $ok = $this->M_admin->delete_kegiatan($id);
+        // 2. MENCEGAH ERROR 1451: Hapus semua tanda tangan yang terhubung dengan kegiatan ini
+        // Kita hapus di tbl_tanda_tangan dan tbl_presensi (jika ada relasi juga)
+        $this->db->where('ID_KEGIATAN', $id);
+        $this->db->delete('tbl_tanda_tangan');
+
+        $this->db->where('ID_KEGIATAN', $id);
+        $this->db->delete('tbl_presensi');
+
+        // 3. Setelah data anak dihapus, baru hapus data induknya (Kegiatan)
+        $this->db->where('ID_KEGIATAN', $id);
+        $ok = $this->db->delete('tbl_kegiatan');
+
         if ($ok) {
-            // CATAT LOG
+            // CATAT LOG AKTIVITAS
             log_activity('DELETE', 'Menghapus kegiatan: ' . $nama);
-            $this->session->set_flashdata('success', 'Kegiatan berhasil dihapus.');
+            $this->session->set_flashdata('success', 'Kegiatan dan seluruh data peserta berhasil dihapus.');
         } else {
             $this->session->set_flashdata('error', 'Gagal menghapus kegiatan.');
         }
+
         redirect('superadmin/kegiatan');
     }
 
-    public function toggle_status($id, $status) {
-    $this->db->where('ID_KEGIATAN', $id);
-    $update = $this->db->update('tbl_kegiatan', ['STS' => $status]);
+        public function toggle_status($id, $status) {
+        $this->db->where('ID_KEGIATAN', $id);
+        $update = $this->db->update('tbl_kegiatan', ['STS' => $status]);
 
-    if ($update) {
-        $msg = ($status == 1) ? "Absensi diaktifkan." : "Absensi dinonaktifkan.";
-        $this->session->set_flashdata('success', $msg);
-        log_activity('EDIT', $msg . " ID: " . $id);
-    } else {
-        $this->session->set_flashdata('error', "Gagal mengubah status.");
+        if ($update) {
+            $msg = ($status == 1) ? "Absensi diaktifkan." : "Absensi dinonaktifkan.";
+            $this->session->set_flashdata('success', $msg);
+            log_activity('EDIT', $msg . " ID: " . $id);
+        } else {
+            $this->session->set_flashdata('error', "Gagal mengubah status.");
+        }
+        redirect('superadmin/kegiatan');
     }
-    redirect('superadmin/kegiatan');
-}
 
     public function tambah()
     {
@@ -376,39 +388,41 @@ class Superadmin extends MY_Controller {
     }
    
     public function simpan_user() {
-        // Konfigurasi Upload Gambar
+        // Konfigurasi Upload
         $config['upload_path']   = './assets/img/profile/';
         $config['allowed_types'] = 'gif|jpg|png|jpeg';
-        $config['max_size']      = 2048; // 2MB
-        $config['file_name']     = 'profile_' . time(); // Penamaan unik
+        $config['max_size']      = 2048; 
+        $config['file_name']     = 'profile_' . time();
 
         $this->load->library('upload', $config);
 
-        if ($this->upload->do_upload('gambar')) {
-            // Jika berhasil upload
-            $upload_data = $this->upload->data();
-            $file_name   = $upload_data['file_name'];
+        // Cek apakah ada file yang diunggah
+        if (!empty($_FILES['gambar']['name'])) {
+            if ($this->upload->do_upload('gambar')) {
+                $upload_data = $this->upload->data();
+                $file_name   = $upload_data['file_name']; // Ambil nama file baru
+            } else {
+                // Jika gagal upload, kirim pesan error
+                $this->session->set_flashdata('error', $this->upload->display_errors());
+                redirect('superadmin/tambah_user');
+                return;
+            }
         } else {
-            // Jika gagal atau tidak upload, gunakan default
+            // Jika tidak upload foto, gunakan foto default
             $file_name = 'default.svg';
         }
 
         $data = [
             'NAMA'             => $this->input->post('nama'),
             'PERANGKAT_DAERAH' => $this->input->post('pd'),
-            'BIDANG'           => $this->input->post('bidang'),
             'USERNAME'         => $this->input->post('username'),
             'PASSWORD'         => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
             'ROLE'             => $this->input->post('role'),
-            'GAMBAR'           => $file_name // Nama file yang disimpan di database
+            'GAMBAR'           => $file_name // PASTIKAN kolom database namanya GAMBAR
         ];
 
-        if ($this->db->insert('tbl_user', $data)) {
-            $this->log_activity('ADD', "Menambahkan user baru: " . $data['USERNAME']);
-            $this->session->set_flashdata('success', 'User berhasil ditambahkan.');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menambahkan user.');
-        }
+        $this->db->insert('tbl_user', $data);
+        $this->session->set_flashdata('success', 'User berhasil ditambahkan.');
         redirect('superadmin/kelola_user');
     }
 
@@ -424,6 +438,25 @@ class Superadmin extends MY_Controller {
         $this->load->view('superadmin/tambah_user', $data); 
         $this->load->view('superadmin/footer');
     }
+    public function hapus_user($id) {
+    // 1. Ambil data user dulu untuk keperluan Log (opsional)
+    $user = $this->db->get_where('tbl_user', ['ID' => $id])->row();
+    $username = ($user) ? $user->USERNAME : 'ID: '.$id;
+
+    // 2. Proses Hapus
+    $this->db->where('ID', $id);
+    if ($this->db->delete('tbl_user')) {
+        // Tambahkan Log Aktivitas
+        $this->log_activity('DELETE', "Menghapus user: " . $username);
+        
+        $this->session->set_flashdata('success', 'User berhasil dihapus.');
+    } else {
+        $this->session->set_flashdata('error', 'Gagal menghapus user.');
+    }
+
+    // 3. Kembalikan ke halaman kelola user
+    redirect('superadmin/kelola_user');
+}
 
     public function change_password()
     {
