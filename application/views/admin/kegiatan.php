@@ -129,48 +129,58 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <?php $no = 1; foreach($kegiatan as $row): ?>
-                            <tr>
-                                <th scope="row"><?= $no++; ?></th>
-                                <td><?= $row->NAMA ?></td>
-                                <td><?= $row->TANGGAL ?></td>
-                                <td><?= $row->TEMPAT ?></td>
-                                <td><?= $row->PIMPINAN_RAPAT ?></td>
-                                <td class="text-center">
-                                    <?php if(!empty($row->qr_token)): ?>
-                                        <?php 
-                                            $this->load->helper('url');
-                                            // GANTI $row->ID menjadi $row->ID_KEGIATAN
-                                            $url_cetak = base_url('admin/cetak_qr/' . $row->ID_KEGIATAN); 
+                                <?php $no = 1; foreach($kegiatan as $row): ?>
+                                <tr>
+                                    <th scope="row"><?= $no++; ?></th>
+                                    <td><?= $row->NAMA ?></td>
+                                    <td><?= $row->TANGGAL ?></td>
+                                    <td><?= $row->TEMPAT ?></td>
+                                    <td><?= $row->PIMPINAN_RAPAT ?></td>
+                                    <td class="text-center">
+                                        <?php if(!empty($row->qr_token)): ?>
+                                            <?php 
+                                                $url_cetak = base_url('admin/cetak_qr/' . $row->ID_KEGIATAN); 
+                                                $slug_nama = url_title($row->NAMA, 'dash', TRUE); 
+                                                $url_presensi = base_url('presensi/isi/' . $row->qr_token . '/' . $slug_nama);
+                                                $qr_api = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" . urlencode($url_presensi);
+                                            ?>
+                                            <a href="<?= $url_cetak ?>" target="_blank" title="Klik untuk Cetak">
+                                                <img src="<?= $qr_api ?>" width="50" style="border: 1px solid #ddd;">
+                                                <br><small>Cetak QR</small>
+                                            </a>
+                                        <?php else: ?>
+                                            <span class="badge badge-secondary">Token Belum Ada</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-center" style="vertical-align: middle;">
+                                        <div class="d-flex justify-content-center align-items-center" style="gap: 5px; min-width: 150px;">
                                             
-                                            $slug_nama = url_title($row->NAMA, 'dash', TRUE); 
-                                            $url_presensi = base_url('presensi/isi/' . $row->qr_token . '/' . $slug_nama);
-                                            $qr_api = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" . urlencode($url_presensi);
-                                        ?>
-                                        <a href="<?= $url_cetak ?>" target="_blank" title="Klik untuk Cetak">
-                                            <img src="<?= $qr_api ?>" width="50" style="border: 1px solid #ddd;">
-                                            <br><small>Cetak QR</small>
-                                        </a>
-                                    <?php else: ?>
-                                        <span class="badge badge-secondary">Token Belum Ada</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td class="text-center" style="vertical-align: middle;">
-                                    <div class="d-flex justify-content-center align-items-center" style="gap: 5px; min-width: 120px;">
-                                        <a href="<?= base_url('admin/detail/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-primary" title="Detail">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="<?= base_url('admin/edit/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-warning" title="Edit">
-                                            <i class="fas fa-edit text-white"></i>
-                                        </a>
-                                        <a href="<?= base_url('admin/hapus/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-danger" title="Hapus" onclick="return confirm('Yakin ingin menghapus kegiatan ini?');">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
+                                            <?php if($row->STS == 1): ?>
+                                                <a href="<?= base_url('admin/toggle_status/'.$row->ID_KEGIATAN.'/0'); ?>" 
+                                                class="btn btn-sm btn-success" title="Absensi Aktif - Klik untuk Matikan">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="<?= base_url('admin/toggle_status/'.$row->ID_KEGIATAN.'/1'); ?>" 
+                                                class="btn btn-sm btn-secondary" title="Absensi Mati - Klik untuk Aktifkan">
+                                                    <i class="fas fa-times-circle"></i>
+                                                </a>
+                                            <?php endif; ?>
+
+                                            <a href="<?= base_url('admin/detail/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-primary" title="Detail">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="<?= base_url('admin/edit/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-warning" title="Edit">
+                                                <i class="fas fa-edit text-white"></i>
+                                            </a>
+                                            <a href="<?= base_url('admin/hapus/'. $row->ID_KEGIATAN); ?>" class="btn btn-sm btn-danger" title="Hapus" onclick="return confirm('Yakin ingin menghapus kegiatan ini?');">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
                         </table>
                     </div>
                     <?php else: ?>

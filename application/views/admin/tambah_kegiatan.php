@@ -66,19 +66,19 @@
                             <select class="form-control select2-multiple" name="ID_OPD[]" id="ID_OPD" multiple="multiple" style="width: 100%;" required>
                                 <optgroup label="PILIH BERDASARKAN JENIS (KOLEKTIF)">
                                     <?php if(!empty($jenis_opd)): foreach ($jenis_opd as $j): ?>
-                                        <option value="JENIS_<?= $j->{'ID_J-OPD'} ?>" data-type="group">[SEMUA] <?= $j->NAMA_OPD ?></option>
+                                        <option value="JENIS_<?= $j->{'ID_J-OPD'} ?>" data-type="group">
+                                            [SEMUA] <?= $j->NAMA_OPD ?>
+                                        </option>
                                     <?php endforeach; endif; ?>
                                 </optgroup>
                                 <optgroup label="PILIH PERANGKAT DAERAH (INDIVIDU)">
                                     <?php if(!empty($opd)): foreach ($opd as $o): ?>
-                                        <option value="<?= $o->ID_OPD ?>" data-jenis="JENIS_<?= $o->{'ID_OPD'} ?>" data-type="individual"><?= $o->NAMA_OPD ?></option>
+                                        <option value="<?= $o->ID_OPD ?>" data-jenis="JENIS_<?= $o->{'ID_J-OPD'} ?>" data-type="individual">
+                                            <?= $o->NAMA_OPD ?>
+                                        </option>
                                     <?php endforeach; endif; ?>
                                 </optgroup>
                             </select>
-                            
-                            <div id="urutan-helper" class="mt-2 small text-muted" style="display:none;">
-                                Urutan Input: <span id="list-urutan" class="font-weight-bold text-dark"></span>
-                            </div>
                         </div>
 
                         <div class="form-group col-md-4">

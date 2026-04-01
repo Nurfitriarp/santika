@@ -222,108 +222,117 @@ class Admin extends MY_Controller {
     }
 
     // save kegiatan
-    public function simpan() {
-    $pilihan_opd = $this->input->post('ID_OPD'); // Tangkap array dari Select2
-    $jml_input   = $this->input->post('JML_PESERTA'); // Tangkap string "12,14,18"
-
-    if (empty($pilihan_opd)) {
-        $this->session->set_flashdata('error', 'Pilih minimal satu instansi.');
-        redirect('admin/tambah');
-        return;
-    }
-
-    // 1. Bersihkan ID dari kategori kolektif [SEMUA]
-    $final_ids = [];
-    foreach ($pilihan_opd as $id) {
-        if (strpos($id, 'JENIS_') === false) {
-            $final_ids[] = $id;
-        }
-    }
-    $final_ids = array_unique($final_ids);
-
-    // 2. Pecah input jumlah peserta
-    $jml_array = explode(',', $jml_input);
-    $jml_array = array_map('trim', $jml_array); 
-
-    // 3. JODOHKAN ID dengan JUMLAHNYA
-    $data_gabungan = [];
-    $total_peserta = 0;
-    
-    foreach ($final_ids as $index => $id) {
-        // Ambil angka sesuai urutan, jika tidak ada set 0
-        $jml_orang = isset($jml_array[$index]) && is_numeric($jml_array[$index]) ? (int)$jml_array[$index] : 0;
-        
-        // Format: "ID:JUMLAH"
-        $data_gabungan[] = $id . ':' . $jml_orang;
-        $total_peserta += $jml_orang;
-    }
-
-    // 4. Masukkan ke Array Data
-    $data = [
-        'NAMA'               => $this->input->post('NAMA'),
-        'TEMPAT'             => $this->input->post('TEMPAT'),
-        'JAM'                => $this->input->post('JAM'),
-        'TANGGAL'            => $this->input->post('TANGGAL'),
-        'SKPD_PENYELENGGARA' => $this->input->post('SKPD_PENYELENGGARA'),
-        'PIMPINAN_RAPAT'     => $this->input->post('PIMPINAN_RAPAT'),
-        // INI BAGIAN TERPENTING: Simpan sebagai string dipisah koma
-        'ID_OPD'             => implode(',', $data_gabungan), 
-        'JML_PESERTA'        => $total_peserta,
-        'qr_token'           => md5(uniqid(rand(), true))
-    ];
-
-    $this->db->insert('tbl_kegiatan', $data);
-    redirect('admin/kegiatan');
-}
-
-    public function update()
+    public function edit($id)
     {
-        $id = $this->input->post('ID_KEGIATAN');
-        $nama_kegiatan = $this->input->post('NAMA');
+        $admin_id = $this->session->userdata('admin_id');
+        $data['admin'] = $this->db->get_where('tbl_user', ['ID' => $admin_id])->row();
+        $data['kegiatan'] = $this->db->get_where('tbl_kegiatan', ['ID_KEGIATAN' => $id])->row();
+        
+        $data['opd'] = $this->M_admin->get_opd(); 
+        // TAMBAHKAN BARIS INI:
+        $data['jenis_opd'] = $this->db->get('tbl_jenis_opd')->result(); 
+
+        if (!$data['kegiatan']) {
+            $this->session->set_flashdata('error', 'Data kegiatan tidak ditemukan.');
+            redirect('admin/kegiatan');
+        }
+
+        $this->load->view('admin/header');
+        $this->load->view('admin/sidebar', $data);
+        $this->load->view('admin/edit_kegiatan', $data); 
+        $this->load->view('admin/footer');
+    }
+
+    public function simpan() {
+        $pilihan_opd = $this->input->post('ID_OPD'); 
+        $jml_input   = $this->input->post('JML_PESERTA'); 
+
+        if (empty($pilihan_opd)) {
+            $this->session->set_flashdata('error', 'Pilih minimal satu instansi.');
+            redirect('admin/tambah');
+            return;
+        }
+
+        $jml_array = explode(',', $jml_input);
+        $jml_array = array_map('trim', $jml_array); 
+
+        $data_gabungan = [];
+        $total_peserta = 0;
+        
+        foreach ($pilihan_opd as $index => $val) {
+            $jml_orang = (isset($jml_array[$index]) && is_numeric($jml_array[$index])) ? (int)$jml_array[$index] : 0;
+            $data_gabungan[] = $val . ':' . $jml_orang;
+            $total_peserta += $jml_orang;
+        }
+
         $data = [
-            'NAMA' => $nama_kegiatan,
-            'TEMPAT' => $this->input->post('TEMPAT'),
-            'JAM' => $this->input->post('JAM'),
-            'TANGGAL' => $this->input->post('TANGGAL'),
+            'NAMA'               => $this->input->post('NAMA'),
+            'TEMPAT'             => $this->input->post('TEMPAT'),
+            'JAM'                => $this->input->post('JAM'),
+            'TANGGAL'            => $this->input->post('TANGGAL'),
             'SKPD_PENYELENGGARA' => $this->input->post('SKPD_PENYELENGGARA'),
-            'PIMPINAN_RAPAT' => $this->input->post('PIMPINAN_RAPAT'),
-            'ID_OPD' => $this->input->post('ID_OPD'),
-            'JML_PESERTA' => $this->input->post('JML_PESERTA'),
+            'PIMPINAN_RAPAT'     => $this->input->post('PIMPINAN_RAPAT'),
+            'ID_OPD'             => implode(',', $data_gabungan), 
+            'JML_PESERTA'        => $total_peserta,
+            'STS'                => 1, // Default aktif
+            'qr_token'           => md5(uniqid(rand(), true))
+        ];
+
+        $this->db->insert('tbl_kegiatan', $data);
+        log_activity('ADD', 'Menambahkan kegiatan: ' . $data['NAMA']);
+        redirect('admin/kegiatan');
+    }
+
+    public function update() {
+        $id = $this->input->post('ID_KEGIATAN');
+        $pilihan_opd = $this->input->post('ID_OPD'); 
+        $jml_input   = $this->input->post('JML_PESERTA'); 
+
+        $jml_array = explode(',', $jml_input);
+        $jml_array = array_map('trim', $jml_array);
+
+        $data_gabungan = [];
+        $total_peserta = 0;
+        foreach ($pilihan_opd as $index => $val) {
+            $jml_orang = (isset($jml_array[$index]) && is_numeric($jml_array[$index])) ? (int)$jml_array[$index] : 0;
+            $data_gabungan[] = $val . ':' . $jml_orang;
+            $total_peserta += $jml_orang;
+        }
+
+        $data = [
+            'NAMA'               => $this->input->post('NAMA'),
+            'TEMPAT'             => $this->input->post('TEMPAT'),
+            'JAM'                => $this->input->post('JAM'),
+            'TANGGAL'            => $this->input->post('TANGGAL'),
+            'SKPD_PENYELENGGARA' => $this->input->post('SKPD_PENYELENGGARA'),
+            'PIMPINAN_RAPAT'     => $this->input->post('PIMPINAN_RAPAT'),
+            'ID_OPD'             => implode(',', $data_gabungan), 
+            'JML_PESERTA'        => $total_peserta,
         ];
 
         $this->db->where('ID_KEGIATAN', $id);
-        if ($this->db->update('tbl_kegiatan', $data)) {
-            // CATAT LOG
-            log_activity('EDIT', 'Memperbarui data kegiatan: ' . $nama_kegiatan);
-            $this->session->set_flashdata('success', 'Kegiatan berhasil diperbarui.');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal memperbarui kegiatan.');
-        }
-        redirect('admin/kegiatan');
-}
-
-    // Fungsi untuk menampilkan halaman edit
-    public function edit($id)
-{
-    $admin_id = $this->session->userdata('admin_id');
-    $data['admin'] = $this->db->get_where('tbl_user', ['ID' => $admin_id])->row();
-
-    // 1. Ambil data kegiatan
-    $data['kegiatan'] = $this->db->get_where('tbl_kegiatan', ['ID_KEGIATAN' => $id])->row();
-
-    // 2. Ambil data master (PASTIKAN INI ADA)
-    $data['opd'] = $this->M_admin->get_opd(); 
-    $data['jenis_opd'] = $this->db->get('tbl_jenis_opd')->result(); 
-
-    if (!$data['kegiatan']) {
-        $this->session->set_flashdata('error', 'Data tidak ditemukan.');
+        $this->db->update('tbl_kegiatan', $data);
+        log_activity('EDIT', 'Memperbarui kegiatan: ' . $data['NAMA']);
         redirect('admin/kegiatan');
     }
 
-    $this->load->view('admin/header');
-    $this->load->view('admin/sidebar', $data);
-    $this->load->view('admin/edit_kegiatan', $data); 
-    $this->load->view('admin/footer');
+    public function toggle_status($id, $status) {
+    // Pastikan ID valid
+    if (!$id) {
+        redirect('admin/kegiatan');
+    }
+
+    $data_update = ['STS' => $status];
+    $this->db->where('ID_KEGIATAN', $id);
+    $this->db->update('tbl_kegiatan', $data_update);
+
+    $msg = ($status == 1) ? "Absensi kegiatan berhasil diaktifkan." : "Absensi kegiatan telah dinonaktifkan.";
+    $this->session->set_flashdata('success', $msg);
+    
+    // Log aktivitas
+    log_activity('EDIT', $msg . " (ID Kegiatan: $id)");
+
+    redirect('admin/kegiatan');
 }
 
     // Hapus kegiatan
