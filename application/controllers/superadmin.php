@@ -388,43 +388,51 @@ class Superadmin extends MY_Controller {
     }
    
     public function simpan_user() {
-        // Konfigurasi Upload
-        $config['upload_path']   = './assets/img/profile/';
-        $config['allowed_types'] = 'gif|jpg|png|jpeg';
-        $config['max_size']      = 2048; 
-        $config['file_name']     = 'profile_' . time();
+    // 1. Tentukan Path yang Pasti (Gunakan FCPATH)
 
-        $this->load->library('upload', $config);
-
-        // Cek apakah ada file yang diunggah
-        if (!empty($_FILES['gambar']['name'])) {
-            if ($this->upload->do_upload('gambar')) {
-                $upload_data = $this->upload->data();
-                $file_name   = $upload_data['file_name']; // Ambil nama file baru
-            } else {
-                // Jika gagal upload, kirim pesan error
-                $this->session->set_flashdata('error', $this->upload->display_errors());
-                redirect('superadmin/tambah_user');
-                return;
-            }
-        } else {
-            // Jika tidak upload foto, gunakan foto default
-            $file_name = 'default.svg';
-        }
-
-        $data = [
-            'NAMA'             => $this->input->post('nama'),
-            'PERANGKAT_DAERAH' => $this->input->post('pd'),
-            'USERNAME'         => $this->input->post('username'),
-            'PASSWORD'         => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
-            'ROLE'             => $this->input->post('role'),
-            'GAMBAR'           => $file_name // PASTIKAN kolom database namanya GAMBAR
-        ];
-
-        $this->db->insert('tbl_user', $data);
-        $this->session->set_flashdata('success', 'User berhasil ditambahkan.');
-        redirect('superadmin/kelola_user');
+    $upload_path = FCPATH . 'assets/img/profile/';
+    if (!is_dir($upload_path)) {
+        mkdir($upload_path, 0777, TRUE);
     }
+
+    // 2. Konfigurasi Upload
+    $config['upload_path']   = $upload_path;
+    $config['allowed_types'] = 'jpg|jpeg|png'; // Samakan dengan update_foto
+    $config['max_size']      = 2048; 
+    $config['file_name']     = 'profile_' . time();
+
+    $this->load->library('upload', $config);
+
+    // 3. Logika Upload
+    if (!empty($_FILES['gambar']['name'])) {
+        if ($this->upload->do_upload('gambar')) { // 'gambar' harus sesuai name di view
+            $upload_data = $this->upload->data();
+            $file_name   = $upload_data['file_name'];
+        } else {
+            // Jika gagal, tampilkan pesan error spesifik dari library
+            $this->session->set_flashdata('error', 'Gagal Upload: ' . $this->upload->display_errors('', ''));
+            redirect('superadmin/tambah_user');
+            return;
+        }
+    } else {
+        $file_name = 'default.svg';
+    }
+
+    // 4. Simpan ke Database
+    $data = [
+        'NAMA'             => $this->input->post('nama'),
+        'PERANGKAT_DAERAH' => $this->input->post('pd'),
+        'USERNAME'         => $this->input->post('username'),
+        'PASSWORD'         => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
+        'ROLE'             => $this->input->post('role'),
+        'GAMBAR'           => $file_name 
+    ];
+
+    $this->db->insert('tbl_user', $data);
+    log_activity('ADD', 'Menambahkan user baru: ' . $data['USERNAME']); // Tambahkan log
+    $this->session->set_flashdata('success', 'User berhasil ditambahkan.');
+    redirect('superadmin/kelola_user');
+}
 
     public function tambah_user() {
         $admin_id = $this->session->userdata('admin_id');

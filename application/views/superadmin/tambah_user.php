@@ -22,7 +22,7 @@
     <div class="card shadow mb-4">
         <div class="card-body">
             <form action="<?= base_url('superadmin/simpan_user') ?>" method="post" enctype="multipart/form-data">
-                <div class="form-group">
+                <div class="form-group" >
                     <label>Nama Lengkap</label>
                     <input type="text" name="nama" class="form-control" required>
                 </div>
@@ -65,10 +65,10 @@
                         <small class="text-muted">Format: JPG, PNG, JPEG. Maks: 2MB.</small>
                     </div>
                 </div> <hr>
+                <a href="<?= base_url('superadmin/kelola_user') ?>" class="btn btn-secondary shadow-sm">Batal</a>
                 <button type="submit" class="btn btn-primary shadow-sm">
                     <i class="fas fa-save fa-sm"></i> Simpan User
                 </button>
-                <a href="<?= base_url('superadmin/kelola_user') ?>" class="btn btn-secondary shadow-sm">Batal</a>
             </form>
         </div>
     </div>
@@ -77,22 +77,25 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+
 <script>
     $(document).ready(function() {
-        // 1. Inisialisasi Select2 untuk Fitur Ketik & Filter
-        $('#select-opd').select2({
-            theme: 'bootstrap4',
-            placeholder: "-- Cari Perangkat Daerah --",
-            allowClear: true
-        });
+        // Cek apakah jQuery berjalan
+        console.log("jQuery Ready");
 
-        // 2. Script Upload File Milik Anda (Tetap Dipertahankan)
-        document.getElementById('customFile').addEventListener('change', function(e) {
-            if (e.target.files.length > 0) {
-                var fileName = e.target.files[0].name;
-                var label = e.target.nextElementSibling;
-                label.innerText = fileName;
-            }
+        // Inisialisasi Select2 dengan proteksi jika library belum muat
+        if ($.isFunction($.fn.select2)) {
+            $('#select-opd').select2({
+                theme: 'bootstrap4',
+                placeholder: "-- Cari Perangkat Daerah --",
+                allowClear: true
+            });
+        }
+
+        // Script untuk label foto profil
+        $('.custom-file-input').on('change', function() {
+            let fileName = $(this).val().split('\\').pop();
+            $(this).next('.custom-file-label').addClass("selected").html(fileName);
         });
     });
 </script>

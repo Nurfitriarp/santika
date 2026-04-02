@@ -40,8 +40,8 @@
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                 <a href="<?= base_url('superadmin/kelola_user'); ?>" class="btn btn-secondary">Batal</a>
+                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
             </form>
         </div>
     </div>
