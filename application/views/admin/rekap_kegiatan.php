@@ -125,7 +125,16 @@
                                     <tr>
                                         <th scope="row"><?= $no++; ?></th>
                                         <td><?= $row->NAMA ?></td>
-                                        <td><?= $row->TANGGAL ?></td>
+                                        <td>
+                                        <?php
+                                            $bulan = array (
+                                                1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                                                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                                            );
+                                            $split = explode('-', $row->TANGGAL); // Asumsi format database YYYY-MM-DD
+                                            echo $split[2] . ' ' . $bulan[(int)$split[1]] . ' ' . $split[0];
+                                            ?>
+                                    </td>
                                         <td><?= $row->TEMPAT ?></td>
                                         <td><?= $row->PIMPINAN_RAPAT ?></td>
                                     </tr>
