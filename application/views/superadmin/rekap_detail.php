@@ -52,7 +52,7 @@
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label class="font-weight-bold">PD Penyelenggara:</label>
+                                    <label class="font-weight-bold">Perangkat Daerah Penyelenggara:</label>
                                     <p><?= $detail->SKPD_PENYELENGGARA ?? 'N/A' ?></p>
                                 </div>
                                 <div class="col-md-6">
@@ -108,7 +108,7 @@
                 <div class="col-xl-12 col-lg-12">
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Daftar Peserta yang Login</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Daftar Kehadiran Peserta </h6>
                         </div>
 
                         <div class="card-body">
@@ -159,7 +159,7 @@
                                         <?php else: ?>
                                             <tr>
                                                 <td colspan="7" class="text-center">
-                                                    <em>Belum ada peserta yang login</em>
+                                                    <em>Belum ada peserta yang melakukan presensi</em>
                                                 </td>
                                             </tr>
                                         <?php endif; ?>
