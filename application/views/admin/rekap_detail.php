@@ -19,6 +19,15 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
 
+        <?php if($this->session->flashdata('message')): ?>
+        <div class="alert alert-<?= $this->session->flashdata('type'); ?> alert-dismissible fade show" role="alert">
+            <?= $this->session->flashdata('message'); ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    <?php endif; ?>
+
             <div class="row justify-content-center">
                 <div class="col-xl-12 col-lg-12">
                     <div class="card shadow mb-4">
@@ -56,8 +65,26 @@
                                     <p><?= $detail->SKPD_PENYELENGGARA ?? 'N/A' ?></p>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="font-weight-bold">Jumlah Peserta:</label>
-                                    <p><?= $detail->JML_PESERTA ?? 'N/A' ?></p>
+                                    <label class="font-weight-bold">Statistik Kehadiran:</label>
+                                    <div class="p-3 bg-light border-left-primary rounded">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Target Peserta: <?= $detail->JML_PESERTA ?> Orang</div>
+                                                <div class="h6 mb-0 font-weight-bold text-gray-800">Telah Hadir: <?= $total_hadir ?> Orang (<?= $persentase ?>%)</div>
+                                                
+                                                <div class="progress progress-sm mr-2 mt-2">
+                                                    <div class="progress-bar bg-primary" role="progressbar" 
+                                                        style="width: <?= $persentase ?>%" aria-valuenow="<?= $persentase ?>" 
+                                                        aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+
+                                                <div class="mt-2 small">
+                                                    <span class="mr-2"><i class="fas fa-mars text-info"></i> Laki-laki: <b><?= $count_l ?></b></span>
+                                                    <span><i class="fas fa-venus text-danger"></i> Perempuan: <b><?= $count_p ?></b></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -105,6 +132,7 @@
                                             <th scope="col">Email</th>
                                             <th scope="col">Perangkat Daerah</th>
                                             <th scope="col">Jabatan</th>
+                                            <th scope="col">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -136,6 +164,15 @@
                                                     ?>
                                                 </td>
                                                 <td><?= $p->JABATAN ?? 'N/A' ?></td>
+                                                <td class="text-center">
+                                                    <a href="javascript:void(0);" 
+                                                    class="btn btn-danger btn-sm btn-delete" 
+                                                    data-toggle="modal" 
+                                                    data-target="#deleteModal" 
+                                                    data-url="<?= base_url('admin/delete_peserta/' . $p->ID_LOGIN); ?>">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </td>
                                             </tr>
                                             <?php endforeach; ?>
                                         <?php else: ?>
@@ -156,8 +193,61 @@
         </div>
         <!-- /.container-fluid -->
 
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Konfirmasi Hapus</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Apakah Anda yakin ingin menghapus peserta ini? Data yang dihapus tidak dapat dikembalikan.
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
+                <a id="confirm-delete" class="btn btn-danger" href="#">Hapus</a>
+            </div>
+        </div>
+    </div>
+</div>
+
     </div>
     <!-- End of Main Content -->
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // 1. LOGIKA MODAL HAPUS
+        $('.btn-delete').on('click', function() {
+            // Ambil URL dari atribut data-url tombol sampah
+            var deleteUrl = $(this).data('url');
+            // Masukkan ke href tombol merah di dalam modal
+            $('#confirm-delete').attr('href', deleteUrl);
+        });
+
+        // 2. LOGIKA AUTO-HIDE ALERT (Opsional tapi disarankan)
+        // Membuat alert pesan berhasil hilang otomatis setelah 3 detik
+        window.setTimeout(function() {
+            $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                $(this).remove(); 
+            });
+        }, 3000);
+
+        // 3. ALTERNATIF: JIKA PAKAI SWEETALERT2 (Lebih Modern)
+        /* <?php if($this->session->flashdata('message')): ?>
+            Swal.fire({
+                icon: '<?= $this->session->flashdata('type'); ?>', // success atau danger
+                title: 'Notifikasi',
+                text: '<?= $this->session->flashdata('message'); ?>',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        <?php endif; ?>
+        */
+    });
+</script>
+    
     <!-- End of Main Content -->
 

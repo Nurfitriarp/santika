@@ -910,5 +910,22 @@ class Superadmin extends MY_Controller {
         $this->load->view('superadmin/perda', $data);
         $this->load->view('superadmin/footer');
     }
+        public function delete_peserta($id)
+    {
+        $this->db->where('ID_LOGIN', $id);
+        $this->db->delete('tbl_presensi');
+
+        if ($this->db->affected_rows() > 0) {
+            // Set notifikasi sukses
+            $this->session->set_flashdata('message', 'Data peserta berhasil dihapus!');
+            $this->session->set_flashdata('type', 'success');
+        } else {
+            // Set notifikasi gagal
+            $this->session->set_flashdata('message', 'Gagal menghapus data.');
+            $this->session->set_flashdata('type', 'danger');
+        }
+
+        redirect($_SERVER['HTTP_REFERER']);
+    }
     
 }

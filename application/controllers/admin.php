@@ -98,11 +98,43 @@ class Admin extends MY_Controller {
     
     public function detail($id)
     {
+        $admin_id = $this->session->userdata('admin_id');
+        $data['admin'] = $this->db->get_where('tbl_user', ['ID' => $admin_id])->row();
+
         $data['detail'] = $this->M_admin->get_detail($id);
         $data['peserta'] = $this->M_admin->get_peserta($id);
+
+        if (!$data['detail']) {
+            $this->session->set_flashdata('error', 'Data tidak ditemukan.');
+            redirect('admin/kegiatan');
+        }
+
+        // --- LOGIKA HITUNG STATISTIK (TAMBAHAN) ---
+        $total_hadir = count($data['peserta']);
+        $target_peserta = (int)$data['detail']->JML_PESERTA;
         
+        // Hitung Persentase
+        $data['persentase'] = ($target_peserta > 0) ? round(($total_hadir / $target_peserta) * 100, 1) : 0;
+        
+        // Hitung Gender (Logika aman untuk L/P atau 1/2)
+        $laki = 0;
+        $perempuan = 0;
+        foreach ($data['peserta'] as $p) {
+            $jk = strtoupper($p->JEN_KEL);
+            if ($jk == 'L' || $jk == '1') {
+                $laki++;
+            } elseif ($jk == 'P' || $jk == '2') {
+                $perempuan++;
+            }
+        }
+        
+        $data['count_l'] = $laki;
+        $data['count_p'] = $perempuan;
+        $data['total_hadir'] = $total_hadir;
+        // ------------------------------------------
+
         $this->load->view('admin/header');
-        $this->load->view('admin/sidebar');
+        $this->load->view('admin/sidebar', $data);
         $this->load->view('admin/rekap_detail', $data);
         $this->load->view('admin/footer');
     }
@@ -487,4 +519,23 @@ class Admin extends MY_Controller {
     $data['kegiatan'] = $kegiatan;
     $this->load->view('admin/cetak_qr_view', $data);
 }
+
+    public function delete_peserta($id)
+    {
+        $this->db->where('ID_LOGIN', $id);
+        $this->db->delete('tbl_presensi');
+
+        if ($this->db->affected_rows() > 0) {
+            // Set notifikasi sukses
+            $this->session->set_flashdata('message', 'Data peserta berhasil dihapus!');
+            $this->session->set_flashdata('type', 'success');
+        } else {
+            // Set notifikasi gagal
+            $this->session->set_flashdata('message', 'Gagal menghapus data.');
+            $this->session->set_flashdata('type', 'danger');
+        }
+
+        redirect($_SERVER['HTTP_REFERER']);
+    }
+
 }

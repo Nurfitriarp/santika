@@ -23,7 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://10.168.3.119/santika/';
+$config['base_url'] = 'http://192.168.2.250/santika/';
 
 /*-------------------------------------------------------------------------
 | Index File
