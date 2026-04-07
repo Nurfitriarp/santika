@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Login - SANTIKA</title>
+    <title>Login - DAHAR</title>
     <link href="<?= base_url('assets/vendor/fontawesome-free/css/all.min.css') ?>" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
@@ -28,7 +28,7 @@
                     <div class="card-body p-0">
                         <div class="p-5">
                             <div class="text-center">
-                                <h1 class="h4 text-gray-900 mb-4 font-weight-bold">SANTIKA LOGIN</h1>
+                                <h1 class="h4 text-gray-900 mb-4 font-weight-bold">DAHAR LOGIN</h1>
                             </div>
 
                             <?php if($this->session->flashdata('error')): ?>
@@ -68,7 +68,7 @@
                             
                             <hr>
                             <div class="text-center small">
-                                &copy; 2026 Aplikasi Daftar Hadir
+                                DAHAR - Daftar Hadir
                             </div>
                         </div>
                     </div>
