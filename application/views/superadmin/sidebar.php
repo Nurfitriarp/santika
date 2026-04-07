@@ -7,8 +7,8 @@
                 <img src="<?= base_url('assets/img/logokabmal.png'); ?>" width="40" alt="Logo">
             </div>
             <div class="sidebar-brand-text mx-3 text-left">
-                <div style="font-size: 11px; font-weight: 300; margin-bottom: -5px;">SITEPAT</div>
-                <div style="font-size: 16px; font-weight: 700;">Sistem Informasi Terpadu Presensi Aktivitas</div>
+                <div style="font-size: 16px; font-weight: 700;">DAHAR</div>
+                <div style="font-size: 11px; font-weight: 300; margin-bottom: -5px;">Daftar hadir</div>
             </div>
             </a>
             <!-- Divider -->

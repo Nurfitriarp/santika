@@ -2,7 +2,7 @@
             <footer class="sticky-footer bg-dark">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>SITEPAT - Sistem Informasi Terpadu Presensi Aktivitas</span>
+                        <span>DAHAR - Daftar Hadir</span>
                     </div>
                 </div>
             </footer>
