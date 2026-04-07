@@ -102,7 +102,12 @@
 
                             <div class="form-group">
                                 <label class="font-weight-bold text-dark">Jabatan</label>
-                                <input type="text" name="JABATAN" id="jabatan" class="form-control" placeholder="Contoh: Analis Data" required>
+                                <select name="JABATAN" class="form-control" required>
+                                    <option value="">-- Pilih Jabatan --</option>
+                                    <?php foreach($list_jabatan as $j): ?>
+                                        <option value="<?= $j->NAMA_JABATAN ?>"><?= $j->NAMA_JABATAN ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
 
                             <div class="form-group">
