@@ -68,7 +68,7 @@
                             
                             <hr>
                             <div class="text-center small">
-                                &copy; 2026 Aplikasi Daftar Hadir
+                                DAHAR - Daftar Hadir
                             </div>
                         </div>
                     </div>
